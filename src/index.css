@@ -59,12 +59,12 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .mon {font-family:'VT323', SFMono-Regular,Menlo,monospace;color:#9be7ff;font-size:14px;letter-spacing:0.6px}
 
 /* header layout helpers */
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:36px;flex-wrap:wrap;gap:12px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:12px}
 .header-left{display:flex;align-items:center;gap:12px;min-width:0}
 .header-right{display:flex;align-items:center;gap:12px}
 
 /* ASCII logo (use monospace for exact ASCII art) */
-.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:18px;line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;margin-top:6px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
+.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:18px;line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
 
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
 
