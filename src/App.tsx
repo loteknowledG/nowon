@@ -72,13 +72,13 @@ export default function App(): JSX.Element {
     if (asciiIdx < asciiArt.length) return; // wait until initial type completes
     if (waveActive) return;
     setWaveActive(true);
-    console.debug('[ascii] starting wave');
+    console.log('[ascii] starting wave');
 
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
 
-    const speed = 80;        // ms per erase step (slower so color change is visible)
-    const retypeDelay = 360; // ms to wait before retyping an erased char (longer so recolor is noticeable)
+    const speed = 60;        // ms per erase step — slightly slower so flicker is visible
+    const retypeDelay = 280; // ms to wait before retyping an erased char (visible gap)
     let pos = 0;
     let cancelled = false;
 
@@ -88,36 +88,37 @@ export default function App(): JSX.Element {
       while (pos < asciiArt.length && asciiArt[pos] === '\n') pos++;
       if (pos < asciiArt.length) {
         const idx = pos;
-        // mark erased (CSS will recolor the char)
-        console.debug('[ascii] erase ->', idx);
+        // mark erased (CSS will hide the char and show caret)
+        console.log('[ascii] erase ->', idx);
         setErased((prev) => {
           const next = prev.slice();
           next[idx] = true;
           return next;
         });
         setEraserPos(idx);
-        window.setTimeout(() => setEraserPos(null), Math.max(80, speed));
+        window.setTimeout(() => setEraserPos(null), Math.max(60, speed));
 
         // schedule retype (un-hide) from canonical
         window.setTimeout(() => {
           if (cancelled) return;
-          console.debug('[ascii] retype <-', idx);
+          console.log('[ascii] retype <-', idx);
           setErased((prev) => {
             const next = prev.slice();
             next[idx] = false;
             return next;
           });
           setTypistPos(idx);
-          window.setTimeout(() => setTypistPos(null), 200);
+          // keep the per-character caret visible longer so the movement is obvious
+          window.setTimeout(() => setTypistPos(null), 520);
         }, retypeDelay + (Math.random() * 80));
 
         pos++;
         window.setTimeout(step, speed);
       } else {
-        // finished a full pass: reset and loop after a pause
+        // finished a full pass: reset and loop after a shorter pause so it's continuous
         setErased(new Array(asciiArt.length).fill(false));
         pos = 0;
-        window.setTimeout(step, 700 + Math.random() * 600);
+        window.setTimeout(step, 300 + Math.random() * 260);
       }
     };
 
@@ -127,7 +128,14 @@ export default function App(): JSX.Element {
       clearTimeout(t);
       setWaveActive(false);
     };
-  }, [asciiIdx, asciiArt, waveActive]);
+  }, [asciiIdx, asciiArt]);
+
+  const triggerWave = () => {
+    console.log('[ascii] manual trigger');
+    setAsciiIdx(asciiArt.length);
+    setWaveActive(false);
+    // effect will start automatically because asciiIdx >= asciiArt.length and waveActive is false
+  };
 
   return (
     <div className="container">
@@ -147,7 +155,7 @@ export default function App(): JSX.Element {
                   <span key={i} className={className}>
                     {ch === ' ' ? '\u00A0' : ch}
                     {isErased && <span className="eraser-caret" aria-hidden>█</span>}
-                    {isTypist && <span className="typist-caret" aria-hidden>▌</span>}
+                    {isTypist && <span className="typist-caret ascii-inline-cursor" aria-hidden>|</span>}
                   </span>
                 );
               })}
@@ -166,6 +174,9 @@ export default function App(): JSX.Element {
           </nav>
           <button className="theme-toggle" onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}>
             Toggle theme
+          </button>
+          <button className="theme-toggle" onClick={triggerWave} title="Force the ASCII erase/retype wave">
+            Trigger wave
           </button>
         </div>
       </div>
