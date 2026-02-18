@@ -77,8 +77,8 @@ export default function App(): JSX.Element {
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
 
-    const speed = 50;        // ms per erase step (faster for a flicker effect)
-    const retypeDelay = 220; // ms to wait before retyping an erased char (shorter for flicker)
+    const speed = 60;        // ms per erase step — slightly slower so flicker is visible
+    const retypeDelay = 280; // ms to wait before retyping an erased char (visible gap)
     let pos = 0;
     let cancelled = false;
 
@@ -108,8 +108,9 @@ export default function App(): JSX.Element {
             return next;
           });
           setTypistPos(idx);
-          window.setTimeout(() => setTypistPos(null), 160);
-        }, retypeDelay + (Math.random() * 60));
+          // keep the per-character caret visible a bit longer so it's noticeable
+          window.setTimeout(() => setTypistPos(null), 360);
+        }, retypeDelay + (Math.random() * 80));
 
         pos++;
         window.setTimeout(step, speed);
@@ -117,7 +118,7 @@ export default function App(): JSX.Element {
         // finished a full pass: reset and loop after a shorter pause so it's continuous
         setErased(new Array(asciiArt.length).fill(false));
         pos = 0;
-        window.setTimeout(step, 350 + Math.random() * 300);
+        window.setTimeout(step, 300 + Math.random() * 260);
       }
     };
 
