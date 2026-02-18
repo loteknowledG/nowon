@@ -19,7 +19,7 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 @keyframes bgShift{from{background-position:0 0,0 0,0 0,0 0}to{background-position:-600px 0,600px -200px,40px 40px,-40px -40px}}
 
 /* layout */
-.container{position:relative;z-index:5;max-width:1200px;margin:48px auto;padding:36px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
+.container{position:relative;z-index:5;max-width:1200px;margin:24px auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .logo{font-family:'Press Start 2P',monospace;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:16px;text-transform:uppercase}
 nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
