@@ -72,7 +72,7 @@ export default function App(): JSX.Element {
     if (asciiIdx < asciiArt.length) return; // wait until initial type completes
     if (waveActive) return;
     setWaveActive(true);
-    console.debug('[ascii] starting wave');
+    console.log('[ascii] starting wave');
 
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
@@ -89,7 +89,7 @@ export default function App(): JSX.Element {
       if (pos < asciiArt.length) {
         const idx = pos;
         // mark erased (CSS will hide the char and show caret)
-        console.debug('[ascii] erase ->', idx);
+        console.log('[ascii] erase ->', idx);
         setErased((prev) => {
           const next = prev.slice();
           next[idx] = true;
@@ -101,15 +101,15 @@ export default function App(): JSX.Element {
         // schedule retype (un-hide) from canonical
         window.setTimeout(() => {
           if (cancelled) return;
-          console.debug('[ascii] retype <-', idx);
+          console.log('[ascii] retype <-', idx);
           setErased((prev) => {
             const next = prev.slice();
             next[idx] = false;
             return next;
           });
           setTypistPos(idx);
-          // keep the per-character caret visible a bit longer so it's noticeable
-          window.setTimeout(() => setTypistPos(null), 360);
+          // keep the per-character caret visible longer so the movement is obvious
+          window.setTimeout(() => setTypistPos(null), 520);
         }, retypeDelay + (Math.random() * 80));
 
         pos++;
