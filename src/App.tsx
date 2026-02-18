@@ -128,7 +128,7 @@ export default function App(): JSX.Element {
       clearTimeout(t);
       setWaveActive(false);
     };
-  }, [asciiIdx, asciiArt, waveActive]);
+  }, [asciiIdx, asciiArt]);
 
   const triggerWave = () => {
     console.log('[ascii] manual trigger');
