@@ -59,7 +59,7 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .mon {font-family:'VT323', SFMono-Regular,Menlo,monospace;color:#9be7ff;font-size:14px;letter-spacing:0.6px}
 
 /* header layout helpers */
-.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;flex-wrap:wrap;gap:12px}
+.header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:12px}
 .header-left{display:flex;align-items:center;gap:12px;min-width:0}
 .header-right{display:flex;align-items:center;gap:12px}
 
