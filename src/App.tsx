@@ -130,6 +130,13 @@ export default function App(): JSX.Element {
     };
   }, [asciiIdx, asciiArt, waveActive]);
 
+  const triggerWave = () => {
+    console.log('[ascii] manual trigger');
+    setAsciiIdx(asciiArt.length);
+    setWaveActive(false);
+    // effect will start automatically because asciiIdx >= asciiArt.length and waveActive is false
+  };
+
   return (
     <div className="container">
       <div className="header" style={{ gridColumn: '1 / -1' }}>
@@ -167,6 +174,9 @@ export default function App(): JSX.Element {
           </nav>
           <button className="theme-toggle" onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}>
             Toggle theme
+          </button>
+          <button className="theme-toggle" onClick={triggerWave} title="Force the ASCII erase/retype wave">
+            Trigger wave
           </button>
         </div>
       </div>
