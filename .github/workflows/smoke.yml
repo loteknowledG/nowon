@@ -1,0 +1,34 @@
+name: Samus‑Manus smoke tests
+
+on:
+  push:
+    branches: [ '**' ]
+  pull_request:
+    branches: [ '**' ]
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+
+      - name: Install Python dependencies
+        run: pip install -r samus_manus_mvp/requirements.txt
+
+      - name: Install test deps
+        run: pip install pytest
+
+      - name: Run unit tests
+        run: pytest -q
+
+      - name: Run samus_agent (dry-run)
+        run: python samus_manus_mvp/samus_agent.py run "Take a screenshot" --no-approve
+
+      - name: Show voice_loop help
+        run: python samus_manus_mvp/voice_loop.py --help

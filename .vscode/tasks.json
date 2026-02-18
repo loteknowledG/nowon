@@ -1,0 +1,54 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Install Python requirements",
+			"type": "shell",
+			"command": "pip install -r samus_manus_mvp/requirements.txt",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus: bootstrap (Windows)",
+			"type": "shell",
+			"command": "powershell -ExecutionPolicy Bypass -File .\\bootstrap.ps1",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus smoke: screenshot",
+			"type": "shell",
+			"command": "python samus_manus_mvp/samus_agent.py --no-restore run \"Take a screenshot\" --no-approve",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus voice: speak test",
+			"type": "shell",
+			"command": "python samus_manus_mvp/voice_loop.py \"Hello Samus — voice test\"",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus voice: loop demo",
+			"type": "shell",
+			"command": "python samus_manus_mvp/voice_loop.py \"Hello Samus — voice loop\" --loop",
+			"isBackground": true,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus heartbeat: once announce",
+			"type": "shell",
+			"command": "python samus_manus_mvp/heartbeat.py --once --announce",
+			"isBackground": false,
+			"problemMatcher": []
+		},
+		{
+			"label": "Samus heartbeat: continuous (60s)",
+			"type": "shell",
+			"command": "python samus_manus_mvp/heartbeat.py --interval 60 --announce",
+			"isBackground": true,
+			"problemMatcher": []
+		}
+	]
+}
