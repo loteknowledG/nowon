@@ -147,7 +147,7 @@ export default function App(): JSX.Element {
                   <span key={i} className={className}>
                     {ch === ' ' ? '\u00A0' : ch}
                     {isErased && <span className="eraser-caret" aria-hidden>█</span>}
-                    {isTypist && <span className="typist-caret" aria-hidden>▌</span>}
+                    {isTypist && <span className="typist-caret ascii-inline-cursor" aria-hidden>|</span>}
                   </span>
                 );
               })}

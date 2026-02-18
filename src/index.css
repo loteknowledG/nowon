@@ -75,9 +75,9 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 /* make erased characters visually disappear and show a bold block caret */
 .ascii-pre span{display:inline-block;position:relative}
 .ascii-pre .erased{color:transparent;transition:color .12s linear;text-shadow:none}
-.ascii-pre .eraser-caret{margin-left:0.25ch;color:var(--accent2);opacity:1;font-weight:900;display:inline-block;transform:translateY(-1px);font-size:0.95em}
+.ascii-pre .eraser-caret{position:absolute;left:0;top:0;color:var(--accent2);opacity:1;font-weight:900;font-size:0.95em;line-height:1}
 .ascii-pre .typist-char{color:var(--accent);text-shadow:0 6px 18px rgba(0,230,168,0.12);transition:text-shadow .12s ease,color .12s ease}
-.ascii-pre .typist-caret{margin-left:0.25ch;color:var(--accent);opacity:.95;font-weight:700;display:inline-block;transform:translateY(-1px)}
+.ascii-pre .typist-caret{position:absolute;right:-0.12ch;top:50%;transform:translateY(-50%);color:var(--accent);opacity:.95;font-weight:900;font-size:1em;line-height:1}
 .ascii-pre .active-glow{animation:ascii-typist-glow 700ms ease-in-out infinite}
 @keyframes ascii-typist-glow{0%{text-shadow:0 0 0 rgba(0,0,0,0)}50%{text-shadow:0 8px 24px rgba(0,230,168,0.18)}100%{text-shadow:0 0 0 rgba(0,0,0,0)}}
 /* subtle caret pulse while erased */
