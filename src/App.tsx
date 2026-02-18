@@ -77,8 +77,8 @@ export default function App(): JSX.Element {
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
 
-    const speed = 80;        // ms per erase step (slower so color change is visible)
-    const retypeDelay = 360; // ms to wait before retyping an erased char (longer so recolor is noticeable)
+    const speed = 50;        // ms per erase step (faster for a flicker effect)
+    const retypeDelay = 220; // ms to wait before retyping an erased char (shorter for flicker)
     let pos = 0;
     let cancelled = false;
 
@@ -88,7 +88,7 @@ export default function App(): JSX.Element {
       while (pos < asciiArt.length && asciiArt[pos] === '\n') pos++;
       if (pos < asciiArt.length) {
         const idx = pos;
-        // mark erased (CSS will recolor the char)
+        // mark erased (CSS will hide the char and show caret)
         console.debug('[ascii] erase ->', idx);
         setErased((prev) => {
           const next = prev.slice();
@@ -96,7 +96,7 @@ export default function App(): JSX.Element {
           return next;
         });
         setEraserPos(idx);
-        window.setTimeout(() => setEraserPos(null), Math.max(80, speed));
+        window.setTimeout(() => setEraserPos(null), Math.max(60, speed));
 
         // schedule retype (un-hide) from canonical
         window.setTimeout(() => {
@@ -108,16 +108,16 @@ export default function App(): JSX.Element {
             return next;
           });
           setTypistPos(idx);
-          window.setTimeout(() => setTypistPos(null), 200);
-        }, retypeDelay + (Math.random() * 80));
+          window.setTimeout(() => setTypistPos(null), 160);
+        }, retypeDelay + (Math.random() * 60));
 
         pos++;
         window.setTimeout(step, speed);
       } else {
-        // finished a full pass: reset and loop after a pause
+        // finished a full pass: reset and loop after a shorter pause so it's continuous
         setErased(new Array(asciiArt.length).fill(false));
         pos = 0;
-        window.setTimeout(step, 700 + Math.random() * 600);
+        window.setTimeout(step, 350 + Math.random() * 300);
       }
     };
 
