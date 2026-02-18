@@ -45,7 +45,13 @@ export default function App(): JSX.Element {
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="caret">&gt;</span>
-          <span className="ascii-logo" aria-hidden>nowon</span>
+          <span className="ascii-logo" aria-hidden><pre>
+  ,ggg,,ggg,     ,ggggg,   gg    gg    gg   ,ggggg,    ,ggg,,ggg,<br/>  
+ ,8" "8P" "8,   dP"  "Y8gggI8    I8    88bgdP"  "Y8ggg,8" "8P" "8,<br/> 
+ I8   8I   8I  i8'    ,8I  I8    I8    8I i8'    ,8I  I8   8I   8I<br/> 
+,dP   8I   Yb,,d8,   ,d8' ,d8,  ,d8,  ,8I,d8,   ,d8' ,dP   8I   Yb,<br/>
+8P'   8I   `Y8P"Y8888P"   P""Y88P""Y88P" P"Y8888P"   8P'   8I   `Y8
+            </pre></span>
           <span className="sr-only">NOWON</span>
         </div>
 

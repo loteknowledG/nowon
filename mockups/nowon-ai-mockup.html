@@ -3,7 +3,9 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <title>Nowon — AI & Computers (mockup)</title>
+    <title><pre>
+ ._   _        _  ._  
+ | | (_) \/\/ (_) | | <pre> — AI & Computers (mockup)</title>
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
     <style>
       :root{
@@ -31,6 +33,23 @@
       .wrap{position:relative;z-index:5;max-width:1200px;margin:48px auto;padding:48px;display:grid;grid-template-columns:1fr 420px;gap:32px;align-items:start}
       header{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
       .logo{font-family:'Press Start 2P', monospace; font-weight:700; letter-spacing:1px; background:linear-gradient(90deg,var(--accent),var(--accent2)); -webkit-background-clip:text; background-clip:text; color:transparent; font-size:16px; text-transform:uppercase}
+
+      /* ASCII logo — animated gradient + subtle glow */
+      .ascii-logo{
+        font-family: 'VT323', 'Press Start 2P', monospace;
+        font-size:14px;
+        letter-spacing:1px;
+        display:inline-block;
+        background:linear-gradient(90deg,#00e6a8,#7b61ff,#00e6a8);
+        background-size:200% 100%;
+        -webkit-background-clip:text;
+        background-clip:text;
+        color:transparent;
+        text-shadow:0 2px 14px rgba(123,97,255,0.06), 0 6px 30px rgba(0,230,168,0.04);
+        animation: asciiGradient 3s linear infinite;
+      }
+      @keyframes asciiGradient{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
+
       nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
       .hero{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px;box-shadow: 0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
       .kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(123,97,255,0.12), rgba(0,230,168,0.06));color:var(--accent);font-weight:600;font-size:12px;margin-bottom:18px}
