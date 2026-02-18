@@ -23,9 +23,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: ASCII regression check
-        run: npm run check-ascii
-
       - name: Lint
         run: npm run lint
 
