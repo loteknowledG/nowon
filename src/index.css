@@ -69,7 +69,7 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
 
 /* ASCII pre — constrain so ASCII never forces layout reflow */
-.ascii-pre{display:inline-block;white-space:pre;font-family:'VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:clamp(10px,1.6vw + 6px,18px)}
+.ascii-pre{display:inline-block;white-space:pre;font-family:'VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:17px}
 
 @keyframes logo-scan{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes logo-sheen{0%{transform:translateX(-120%);opacity:0}40%{opacity:0.06}50%{transform:translateX(120%);opacity:0.85}100%{transform:translateX(120%);opacity:0}}
