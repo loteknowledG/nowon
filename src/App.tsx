@@ -53,6 +53,7 @@ export default function App(): JSX.Element {
   const [eraserPos, setEraserPos] = useState<number | null>(null);
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
+  const [debugInfo, setDebugInfo] = useState({ erasedCount: 0, typistIndex: -1, fontSize: '—' });
 
   // initial type-in (character by character)
   useEffect(() => {
@@ -178,6 +179,48 @@ export default function App(): JSX.Element {
           <button className="theme-toggle" onClick={triggerWave} title="Force the ASCII erase/retype wave">
             Trigger wave
           </button>
+
+          {import.meta.env.DEV && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
+              <div className="dev-debug-panel" role="group" aria-label="ASCII debug controls">
+                <button className="btn ghost" onClick={() => {
+                  // highlight erased/typist once
+                  document.documentElement.classList.add('debug-overlay');
+                  setTimeout(() => document.documentElement.classList.remove('debug-overlay'), 6000);
+                }}>
+                  Highlight (6s)
+                </button>
+
+                <button className="btn ghost" onClick={() => {
+                  // toggle persistent overlay
+                  const next = !document.documentElement.classList.contains('debug-overlay');
+                  if (next) document.documentElement.classList.add('debug-overlay');
+                  else document.documentElement.classList.remove('debug-overlay');
+                }}>
+                  Toggle overlay
+                </button>
+
+                <button className="btn ghost" onClick={() => {
+                  // diagnostics: update local debug info state
+                  const erasedCount = document.querySelectorAll('.ascii-pre span.erased').length;
+                  const typistIndex = typistPos ?? -1;
+                  const asciiEl = document.querySelector('.ascii-pre');
+                  const fontSize = asciiEl ? getComputedStyle(asciiEl).fontSize : '—';
+                  setDebugInfo({ erasedCount, typistIndex, fontSize });
+                }}>
+                  Diagnostics
+                </button>
+
+                <div className="dev-debug-info">
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                    Erased: <strong style={{ color: 'var(--accent)' }}>{debugInfo.erasedCount}</strong>
+                    &nbsp;•&nbsp; Typist: <strong style={{ color: 'var(--accent)' }}>{debugInfo.typistIndex < 0 ? '—' : debugInfo.typistIndex}</strong>
+                    &nbsp;•&nbsp; Font: <strong style={{ color: 'var(--accent)' }}>{debugInfo.fontSize}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
