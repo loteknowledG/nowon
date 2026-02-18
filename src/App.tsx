@@ -40,18 +40,120 @@ export default function App(): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [charIdx, deleting, pIdx]);
 
+  // effects-only: keep a canonical ASCII buffer and always retype from it
+  const asciiArt = `  ,ggg,,ggg,     ,ggggg,   gg    gg    gg   ,ggggg,    ,ggg,,ggg,
+ ,8" "8P" "8,   dP"  "Y8gggI8    I8    88bgdP"  "Y8ggg,8" "8P" "8,
+ I8   8I   8I  i8'    ,8I  I8    I8    8I i8'    ,8I  I8   8I   8I
+,dP   8I   Yb,,d8,   ,d8' ,d8,  ,d8,  ,8I,d8,   ,d8' ,dP   8I   Yb,
+8P'   8I   \`Y8P"Y8888P"   P""Y88P""Y88P" P"Y8888P"   8P'   8I   \`Y8`;
+
+  const [asciiIdx, setAsciiIdx] = useState(0);
+  const [displayStr, setDisplayStr] = useState('');
+  const [waveActive, setWaveActive] = useState(false);
+  const [eraserPos, setEraserPos] = useState<number | null>(null);
+  const [typistPos, setTypistPos] = useState<number | null>(null);
+  const [erased, setErased] = useState<boolean[]>([]);
+
+  // initial type-in (character by character)
+  useEffect(() => {
+    if (asciiIdx >= asciiArt.length) return;
+    const id = window.setTimeout(() => {
+      setAsciiIdx((i) => {
+        const next = i + 1;
+        setDisplayStr(asciiArt.slice(0, next));
+        return next;
+      });
+    }, 8);
+    return () => clearTimeout(id);
+  }, [asciiIdx, asciiArt]);
+
+  // erase → retype wave (CSS-only: toggle `erased` flags; canonical asciiArt is never mutated)
+  useEffect(() => {
+    if (asciiIdx < asciiArt.length) return; // wait until initial type completes
+    if (waveActive) return;
+    setWaveActive(true);
+    console.debug('[ascii] starting wave');
+
+    // ensure erased buffer matches ascii length
+    if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
+
+    const speed = 80;        // ms per erase step (slower so color change is visible)
+    const retypeDelay = 360; // ms to wait before retyping an erased char (longer so recolor is noticeable)
+    let pos = 0;
+    let cancelled = false;
+
+    const step = () => {
+      if (cancelled) return;
+      // advance to next non-newline
+      while (pos < asciiArt.length && asciiArt[pos] === '\n') pos++;
+      if (pos < asciiArt.length) {
+        const idx = pos;
+        // mark erased (CSS will recolor the char)
+        console.debug('[ascii] erase ->', idx);
+        setErased((prev) => {
+          const next = prev.slice();
+          next[idx] = true;
+          return next;
+        });
+        setEraserPos(idx);
+        window.setTimeout(() => setEraserPos(null), Math.max(80, speed));
+
+        // schedule retype (un-hide) from canonical
+        window.setTimeout(() => {
+          if (cancelled) return;
+          console.debug('[ascii] retype <-', idx);
+          setErased((prev) => {
+            const next = prev.slice();
+            next[idx] = false;
+            return next;
+          });
+          setTypistPos(idx);
+          window.setTimeout(() => setTypistPos(null), 200);
+        }, retypeDelay + (Math.random() * 80));
+
+        pos++;
+        window.setTimeout(step, speed);
+      } else {
+        // finished a full pass: reset and loop after a pause
+        setErased(new Array(asciiArt.length).fill(false));
+        pos = 0;
+        window.setTimeout(step, 700 + Math.random() * 600);
+      }
+    };
+
+    const t = window.setTimeout(step, 600);
+    return () => {
+      cancelled = true;
+      clearTimeout(t);
+      setWaveActive(false);
+    };
+  }, [asciiIdx, asciiArt, waveActive]);
+
   return (
     <div className="container">
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
-          <span className="caret">&gt;</span>
-          <span className="ascii-logo" aria-hidden><pre>
-  ,ggg,,ggg,     ,ggggg,   gg    gg    gg   ,ggggg,    ,ggg,,ggg,<br/>  
- ,8" "8P" "8,   dP"  "Y8gggI8    I8    88bgdP"  "Y8ggg,8" "8P" "8,<br/> 
- I8   8I   8I  i8'    ,8I  I8    I8    8I i8'    ,8I  I8   8I   8I<br/> 
-,dP   8I   Yb,,d8,   ,d8' ,d8,  ,d8,  ,8I,d8,   ,d8' ,dP   8I   Yb,<br/>
-8P'   8I   `Y8P"Y8888P"   P""Y88P""Y88P" P"Y8888P"   8P'   8I   `Y8
-            </pre></span>
+          <span className="ascii-logo" aria-hidden>
+            <pre className="ascii-pre">
+              {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
+                const isErased = !!erased[i];
+                const isTypist = i === typistPos;
+                if (ch === '\n') return <br key={i} />;
+                const classList: string[] = [];
+                if (isErased) classList.push('erased');
+                if (isTypist) classList.push('typist-char', 'active-glow');
+                const className = classList.length ? classList.join(' ') : undefined;
+                return (
+                  <span key={i} className={className}>
+                    {ch === ' ' ? '\u00A0' : ch}
+                    {isErased && <span className="eraser-caret" aria-hidden>█</span>}
+                    {isTypist && <span className="typist-caret" aria-hidden>▌</span>}
+                  </span>
+                );
+              })}
+            </pre>
+            <span className="ascii-cursor" aria-hidden>{asciiIdx < asciiArt.length ? '|' : ''}</span>
+          </span>
           <span className="sr-only">NOWON</span>
         </div>
 

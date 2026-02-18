@@ -1,4 +1,16 @@
-:root{--bg:#071024; --panel:rgba(255,255,255,0.03); --accent:#00e6a8; --accent2:#7b61ff; --muted:#86a0b2; --glass: rgba(255,255,255,0.03)}
+:root{
+  --bg:#071024;
+  --panel:rgba(255,255,255,0.03);
+  --accent:#00e6a8;
+  --accent2:#7b61ff;
+  --muted:#86a0b2;
+  --glass: rgba(255,255,255,0.03);
+  /* motion tokens — keep animations coordinated */
+  --ascii-wave-duration: 0.60s;
+  --ascii-wave-ease: cubic-bezier(.2,.9,.2,1);
+  --ui-transition-duration: 0.28s;
+  --ui-transition-ease: cubic-bezier(.2,.8,.2,1);
+}
 [data-theme="light"]{ --bg:#f7f9fb; --panel:rgba(2,6,23,0.03); --accent:#0068ff; --accent2:#ff4da3; --muted:#6b7280 }
 html,body,#root{height:100%;margin:0}
 body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef8;background:var(--bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
@@ -52,9 +64,12 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .header-right{display:flex;align-items:center;gap:12px}
 
 /* ASCII logo (use monospace for exact ASCII art) */
-.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:18px;line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
+.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:18px;line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
 
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
+
+/* ASCII pre — constrain so ASCII never forces layout reflow */
+.ascii-pre{display:inline-block;white-space:pre;font-family:'VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:clamp(10px,1.6vw + 6px,18px)}
 
 @keyframes logo-scan{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes logo-sheen{0%{transform:translateX(-120%);opacity:0}40%{opacity:0.06}50%{transform:translateX(120%);opacity:0.85}100%{transform:translateX(120%);opacity:0}}

@@ -11,7 +11,7 @@
     "preview": "vite preview --port 5173",
     "lint": "eslint \"src/**/*.{ts,tsx}\"",
     "format": "prettier --write ."
-  },
+  }
   "dependencies": {
     "react": "^18.2.0",
     "react-dom": "^18.2.0"
