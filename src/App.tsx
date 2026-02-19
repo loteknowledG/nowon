@@ -56,10 +56,10 @@ export default function App(): JSX.Element {
   const [eraserPos] = useState<number | null>(null);
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
-  const [debugInfo, setDebugInfo] = useState({ erasedCount: 0, typistIndex: -1, fontSize: '—' });
 
   // kicker: show one word at a time (prevents wrap/layout shift)
   const kickerWords = ['Computers', 'AI', 'Agents'];
+  void kickerWords; // kept for semantic/SEO (UI pill removed)
   void kickerWords; // intentionally kept for semantic/SEO; pill UI removed
 
   // background counting grid (subtle, low-contrast rows of numbers that count up)
@@ -241,41 +241,6 @@ export default function App(): JSX.Element {
             <a href="#">Docs</a>
             <a href="#">Contact</a>
           </nav>
-          {import.meta.env.DEV && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
-              <div className="dev-debug-panel" role="group" aria-label="ASCII debug controls">
-
-
-                <button className="btn ghost" onClick={() => {
-                  // toggle persistent overlay
-                  const next = !document.documentElement.classList.contains('debug-overlay');
-                  if (next) document.documentElement.classList.add('debug-overlay');
-                  else document.documentElement.classList.remove('debug-overlay');
-                }}>
-                  Toggle overlay
-                </button>
-
-                <button className="btn ghost" onClick={() => {
-                  // diagnostics: update local debug info state
-                  const erasedCount = document.querySelectorAll('.ascii-pre span.erased').length;
-                  const typistIndex = typistPos ?? -1;
-                  const asciiEl = document.querySelector('.ascii-pre');
-                  const fontSize = asciiEl ? getComputedStyle(asciiEl).fontSize : '—';
-                  setDebugInfo({ erasedCount, typistIndex, fontSize });
-                }}>
-                  Diagnostics
-                </button>
-
-                <div className="dev-debug-info">
-                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>
-                    Erased: <strong style={{ color: 'var(--accent)' }}>{debugInfo.erasedCount}</strong>
-                    &nbsp;•&nbsp; Typist: <strong style={{ color: 'var(--accent)' }}>{debugInfo.typistIndex < 0 ? '—' : debugInfo.typistIndex}</strong>
-                    &nbsp;•&nbsp; Font: <strong style={{ color: 'var(--accent)' }}>{debugInfo.fontSize}</strong>
-                  </div>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
       </div>
 
