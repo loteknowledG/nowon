@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 
 export default function App(): JSX.Element {
   // show one word at a time (prevent wrapping / layout shifts)
@@ -49,13 +49,16 @@ export default function App(): JSX.Element {
  I8   8I   8I  i8'    ,8I  I8    I8    8I i8'    ,8I  I8   8I   8I
 ,dP   8I   Yb,,d8,   ,d8' ,d8,  ,d8,  ,8I,d8,   ,d8' ,dP   8I   Yb,
 8P'   8I   \`Y8P"Y8888P"   P""Y88P""Y88P" P"Y8888P"   8P'   8I   \`Y8`;
-
   const [asciiIdx, setAsciiIdx] = useState(0);
   const [displayStr, setDisplayStr] = useState('');
   const [waveActive, setWaveActive] = useState(false);
   const [eraserPos] = useState<number | null>(null);
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
+
+  // runtime font-size (px) for ASCII so the longest line fits the available width
+  const asciiRef = useRef<HTMLElement | null>(null);
+  const [asciiFontPx, setAsciiFontPx] = useState<number | null>(null);
 
   // kicker: show one word at a time (prevents wrap/layout shift)
   const kickerWords = ['Computers', 'AI', 'Agents'];
@@ -113,6 +116,41 @@ export default function App(): JSX.Element {
     }, 8);
     return () => clearTimeout(id);
   }, [asciiIdx, asciiArt]);
+
+  // size the ASCII font so the longest ASCII line always fits the available column width
+  useEffect(() => {
+    const computeAsciiFont = () => {
+      const pre = asciiRef.current as HTMLElement | null;
+      if (!pre) return;
+      const parent = pre.parentElement as HTMLElement | null;
+      const available = parent ? parent.clientWidth - 12 /* padding guard */ : Math.max(320, window.innerWidth - 48);
+      const lines = asciiArt.split('\n');
+      const maxChars = Math.max(...lines.map((l) => l.length));
+      if (!maxChars) return;
+
+      // measure a single-monospace character width at a known font-size to derive ratio
+      const probe = document.createElement('span');
+      probe.style.position = 'absolute';
+      probe.style.visibility = 'hidden';
+      probe.style.fontFamily = getComputedStyle(pre).fontFamily || "'Hack','VT323',monospace";
+      probe.style.fontSize = '100px';
+      probe.textContent = '0';
+      document.body.appendChild(probe);
+      const charWidthAt100 = probe.getBoundingClientRect().width || 1;
+      document.body.removeChild(probe);
+      const charPerPx = charWidthAt100 / 100; // px width per 1px font-size
+
+      const targetCharWidth = Math.max(1, available / maxChars);
+      let targetFont = Math.floor(targetCharWidth / charPerPx);
+      // clamp to sane bounds
+      targetFont = Math.max(8, Math.min(40, targetFont));
+      setAsciiFontPx(targetFont);
+    };
+
+    computeAsciiFont();
+    window.addEventListener('resize', computeAsciiFont);
+    return () => window.removeEventListener('resize', computeAsciiFont);
+  }, [asciiArt]);
 
   // erase → retype wave (start at the beginning and move forward)
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -188,7 +226,7 @@ export default function App(): JSX.Element {
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre className="ascii-pre neon flicker">
+            <pre ref={asciiRef} className="ascii-pre neon flicker" style={asciiFontPx ? { fontSize: `${asciiFontPx}px` } : undefined }>
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
