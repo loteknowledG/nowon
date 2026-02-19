@@ -56,9 +56,9 @@ export default function App(): JSX.Element {
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
 
-  // runtime font-size (px) for ASCII so the longest line fits the available width
+  // runtime font-size (vw) for ASCII so the longest line fits the viewport width
   const asciiRef = useRef<HTMLElement | null>(null);
-  const [asciiFontPx, setAsciiFontPx] = useState<number | null>(null);
+  const [asciiFontVw, setAsciiFontVw] = useState<number | null>(null);
 
   // kicker: show one word at a time (prevents wrap/layout shift)
   const kickerWords = ['Computers', 'AI', 'Agents'];
@@ -141,10 +141,16 @@ export default function App(): JSX.Element {
       const charPerPx = charWidthAt100 / 100; // px width per 1px font-size
 
       const targetCharWidth = Math.max(1, available / maxChars);
-      let targetFont = Math.floor(targetCharWidth / charPerPx);
-      // clamp to sane bounds
-      targetFont = Math.max(8, Math.min(40, targetFont));
-      setAsciiFontPx(targetFont);
+      const targetFontPx = Math.floor(targetCharWidth / charPerPx);
+      // limit by viewport height so ASCII never overflows vertically
+      const numLines = lines.length || 1;
+      const maxFontPxByHeight = Math.max(8, Math.floor((window.innerHeight * 0.6) / numLines));
+      const finalFontPx = Math.max(8, Math.min(40, Math.min(targetFontPx, maxFontPxByHeight)));
+      // convert px -> vw (viewport width units)
+      const finalFontVw = (finalFontPx / window.innerWidth) * 100;
+      // clamp vw to sensible range
+      const clampedVw = Math.max(0.4, Math.min(10, finalFontVw));
+      setAsciiFontVw(clampedVw);
     };
 
     computeAsciiFont();
@@ -226,7 +232,7 @@ export default function App(): JSX.Element {
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre ref={asciiRef} className="ascii-pre neon flicker" style={asciiFontPx ? { fontSize: `${asciiFontPx}px` } : undefined }>
+            <pre ref={asciiRef} className="ascii-pre neon flicker" style={asciiFontVw ? { fontSize: `${asciiFontVw}vw` } : undefined }>
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
