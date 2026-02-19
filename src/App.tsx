@@ -125,7 +125,6 @@ export default function App(): JSX.Element {
     if (asciiIdx < asciiArt.length) return; // wait until initial type completes
     if (waveActive) return;
     setWaveActive(true);
-    console.log('[ascii] starting wave');
 
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
@@ -141,8 +140,6 @@ export default function App(): JSX.Element {
       while (pos < asciiArt.length && asciiArt[pos] === '\n') pos++;
       if (pos < asciiArt.length) {
         const idx = pos;
-        // mark erased — show a visible caret at the same character immediately so erase is synchronous
-        console.log('[ascii] erase ->', idx);
         // place the visible typist caret on the character being erased (keeps visual sync)
         setTypistPos(idx);
         window.setTimeout(() => setTypistPos(null), Math.max(60, speed));
@@ -156,7 +153,6 @@ export default function App(): JSX.Element {
         // schedule retype (un-hide) from canonical
         window.setTimeout(() => {
           if (cancelled) return;
-          console.log('[ascii] retype <-', idx);
           setErased((prev) => {
             const next = prev.slice();
             next[idx] = false;
