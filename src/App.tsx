@@ -15,7 +15,7 @@ export default function App(): JSX.Element {
   const [pIdx, setPIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
   const [deleting, setDeleting] = useState(false);
-  const [theme, setTheme] = useState<string>(() => 'dark');
+  const [theme] = useState<string>(() => 'dark');
 
   useEffect(() => {
     if (theme === 'light') document.documentElement.dataset.theme = 'light';
@@ -24,9 +24,7 @@ export default function App(): JSX.Element {
   }, [theme]);
 
   useEffect(() => {
-    let t = 80;
     const full = phrases[pIdx];
-    if (deleting) t = 40;
     const timer = window.setTimeout(() => {
       if (!deleting) {
         setCharIdx((i) => i + 1);
@@ -55,18 +53,14 @@ export default function App(): JSX.Element {
   const [asciiIdx, setAsciiIdx] = useState(0);
   const [displayStr, setDisplayStr] = useState('');
   const [waveActive, setWaveActive] = useState(false);
-  const [eraserPos, setEraserPos] = useState<number | null>(null);
+  const [eraserPos] = useState<number | null>(null);
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
   const [debugInfo, setDebugInfo] = useState({ erasedCount: 0, typistIndex: -1, fontSize: '—' });
 
   // kicker: show one word at a time (prevents wrap/layout shift)
   const kickerWords = ['Computers', 'AI', 'Agents'];
-  const [kickerIdx, setKickerIdx] = useState(0);
-  useEffect(() => {
-    const id = window.setInterval(() => setKickerIdx((i) => (i + 1) % kickerWords.length), 2000);
-    return () => clearInterval(id);
-  }, []);
+  void kickerWords; // intentionally kept for semantic/SEO; pill UI removed
 
   // background counting grid (subtle, low-contrast rows of numbers that count up)
   const [countOffset, setCountOffset] = useState<bigint>(0n);
@@ -121,6 +115,9 @@ export default function App(): JSX.Element {
   }, [asciiIdx, asciiArt]);
 
   // erase → retype wave (start at the beginning and move forward)
+  /* eslint-disable react-hooks/exhaustive-deps */
+  // the effect intentionally does not include `waveActive`/`erased.length` in deps
+  // (managed internally).
   useEffect(() => {
     if (asciiIdx < asciiArt.length) return; // wait until initial type completes
     if (waveActive) return;
@@ -180,6 +177,7 @@ export default function App(): JSX.Element {
       setWaveActive(false);
     };
   }, [asciiIdx, asciiArt]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
 
 
@@ -203,7 +201,7 @@ export default function App(): JSX.Element {
                 // per-character randomized spark timing (CSS vars injected inline)
                 const sparkCycle = (3 + Math.random() * 7).toFixed(2) + 's'; // 3–10s cycle
                 const sparkDelay = (-Math.random() * parseFloat(sparkCycle)).toFixed(2) + 's';
-                const spanStyle = { ['--spark-cycle' as any]: sparkCycle, ['--spark-delay' as any]: sparkDelay } as React.CSSProperties;
+                const spanStyle = { ['--spark-cycle']: sparkCycle, ['--spark-delay']: sparkDelay } as React.CSSProperties;
 
                 return (
                   <span key={i} className={className} style={spanStyle}>
@@ -282,17 +280,6 @@ export default function App(): JSX.Element {
       </div>
 
       <section className="hero">
-        <div className="kicker" aria-live="polite">
-          {kickerWords.map((w, i) => (
-            <span
-              key={w}
-              className={`kicker-word ${i === kickerIdx ? 'is-active' : ''}`}
-              aria-hidden={i === kickerIdx ? 'false' : 'true'}
-            >
-              {w}
-            </span>
-          ))}
-        </div>
         <h1>
           nowon — where <span className="type">{text || '\u00A0'}</span>
         </h1>

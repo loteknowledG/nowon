@@ -31,12 +31,9 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 /* layout */
 .container{position:relative;z-index:5;max-width:1200px;margin:24px auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.logo{font-family:'Press Start 2P',monospace;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:16px;text-transform:uppercase}
+
 nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
 .hero{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-.kicker{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(123,97,255,0.12), rgba(0,230,168,0.06));color:var(--accent);font-weight:600;font-size:12px;margin-bottom:18px;min-width:10ch;height:2.05em;box-sizing:border-box}
-.kicker .kicker-word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .28s ease;pointer-events:none}
-.kicker .kicker-word.is-active{opacity:1}
 h1{font-size:34px;margin:0 0 14px;line-height:1.05;font-weight:800}
 h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px;display:inline-block;min-width:12ch;text-align:left;min-height:1.15em;vertical-align:middle}
 .lead{color:var(--muted);margin:0 0 22px;max-width:70%}
@@ -125,8 +122,6 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
   .ascii-pre.neon.flicker, .ascii-pre.neon.flicker span{animation:none}
 } 
 
-.font-hack{font-family:'Hack',monospace!important;font-variant-ligatures:normal;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
-
 /* typing / erase visual states */
 /* make erased characters visually disappear and show a bold block caret */
 .ascii-pre span{display:inline-block;position:relative;transition:opacity .14s linear}
@@ -181,8 +176,6 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .dev-debug-info{margin-left:10px;color:var(--muted);font-size:12px}
 .dev-debug-panel .btn{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);font-size:12px}
 
-/* small caret badge to mimic CLI prompt */
-.caret{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:8px;background:linear-gradient(90deg,#ff7aa6,#7b61ff);color:#041024;font-weight:700;font-family:'Press Start 2P',monospace;margin-right:8px;box-shadow:0 8px 30px rgba(11,16,36,0.6);}
 
 /* terminal-like hero input */
 .terminal-card{margin-top:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:10px 12px;display:flex;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.04);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 12px 40px rgba(2,6,23,0.6);color:var(--fg);font-family:'VT323',monospace;font-size:13px}
@@ -199,6 +192,4 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 }
 
 
-/* ASCII figlet logo */
-.ascii-logo{font-family:'VT323','Press Start 2P',monospace;color:var(--accent);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:6px 10px;border-radius:6px;display:inline-block;white-space:pre;line-height:1;font-size:12px;margin-right:8px}
-.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
