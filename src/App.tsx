@@ -123,7 +123,8 @@ export default function App(): JSX.Element {
       const pre = asciiRef.current as HTMLElement | null;
       if (!pre) return;
       const parent = pre.parentElement as HTMLElement | null;
-      const available = parent ? parent.clientWidth - 12 /* padding guard */ : Math.max(320, window.innerWidth - 48);
+      // apply a small safety margin so characters never touch the container edges
+      const available = (parent ? parent.clientWidth - 12 /* padding guard */ : Math.max(320, window.innerWidth - 48)) * 0.96;
       const lines = asciiArt.split('\n');
       const maxChars = Math.max(...lines.map((l) => l.length));
       if (!maxChars) return;
@@ -232,23 +233,18 @@ export default function App(): JSX.Element {
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre ref={asciiRef} className="ascii-pre neon flicker" style={asciiFontVw ? { fontSize: `${asciiFontVw}vw` } : undefined }>
+            <pre ref={asciiRef} className="ascii-pre" style={asciiFontVw ? { fontSize: `${asciiFontVw}vw` } : undefined }>
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
                 if (ch === '\n') return <br key={i} />;
                 const classList: string[] = [];
                 if (isErased) classList.push('erased');
-                if (isTypist) classList.push('typist-char', 'active-glow');
+                if (isTypist) classList.push('typist-char');
                 const className = classList.length ? classList.join(' ') : undefined;
 
-                // per-character randomized spark timing (CSS vars injected inline)
-                const sparkCycle = (3 + Math.random() * 7).toFixed(2) + 's'; // 3–10s cycle
-                const sparkDelay = (-Math.random() * parseFloat(sparkCycle)).toFixed(2) + 's';
-                const spanStyle = { ['--spark-cycle']: sparkCycle, ['--spark-delay']: sparkDelay } as React.CSSProperties;
-
                 return (
-                  <span key={i} className={className} style={spanStyle}>
+                  <span key={i} className={className}>
                     {ch === ' ' ? '\u00A0' : ch}
                     {isErased && <span className="eraser-caret" aria-hidden>│</span>}
                     {isTypist && <span className="typist-caret ascii-inline-cursor" aria-hidden>│</span>}
