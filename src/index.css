@@ -6,6 +6,9 @@
   --accent2:#7b61ff;
   --muted:#86a0b2;
   --glass: rgba(255,255,255,0.03);
+  /* minimum site width used for mobile scaling */
+  --min-site-width: 360px;
+  --site-scale: 1;
   /* motion tokens — keep animations coordinated */
   --ascii-wave-duration: 0.60s;
   --ascii-wave-ease: cubic-bezier(.2,.9,.2,1);
@@ -18,6 +21,15 @@
 [data-theme="light"]{ --bg:#f7f9fb; --fg:#041024; --panel:rgba(2,6,23,0.03); --accent:#0068ff; --accent2:#ff4da3; --muted:#6b7280 }
 html,body,#root{height:100%;margin:0}
 body{font-family:'Hack',Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--fg);background:var(--bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+
+/* scale entire site down on very small viewports so it never horizontally scrolls */
+.site-wrapper{width:100%;transform-origin:top center;}
+@media (max-width: calc(var(--min-site-width) - 0.02px)){
+  :root{--site-scale: calc(100vw / var(--min-site-width));}
+  .site-wrapper{transform:scale(var(--site-scale));}
+  /* keep the scaled content centered and avoid horizontal scroll */
+  body{overflow-x:hidden}
+}
 /* animated grid / subtle particles */
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 40px), radial-gradient(circle at 10% 20%, rgba(123,97,255,0.06), transparent 15%), repeating-linear-gradient(transparent, transparent 24px, rgba(255,255,255,0.02) 25px), repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(255,255,255,0.02) 25px);background-size:100% 100%,60% 60%,40px 40px,40px 40px;animation:bgShift 22s linear infinite;mix-blend-mode:overlay;opacity:0.9}
 @keyframes bgShift{from{background-position:0 0,0 0,0 0,0 0}to{background-position:-600px 0,600px -200px,40px 40px,-40px -40px}}
@@ -32,11 +44,11 @@ body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;bac
 .container{position:relative;z-index:5;max-width:1200px;margin:24px auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 
-nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
+nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:clamp(12px, 0.8vw + 10px, 14px);white-space:nowrap}
 .hero{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-h1{font-size:34px;margin:0 0 14px;line-height:1.05;font-weight:800}
-h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px;display:inline-block;min-width:12ch;text-align:left;min-height:1.15em;vertical-align:middle}
-.lead{color:var(--muted);margin:0 0 22px;max-width:70%}
+h1{font-size:clamp(20px, 3.2vw + 6px, 34px);margin:0 0 14px;line-height:1.05;font-weight:800;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px;display:inline-block;min-width:8ch;max-width:60%;text-overflow:ellipsis;white-space:nowrap;vertical-align:middle}
+.lead{color:var(--muted);margin:0 0 22px;max-width:70%;font-size:clamp(13px, 1.2vw + 8px, 16px)}
 .ctas{display:flex;gap:12px}
 .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;color:#041024;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(11,16,36,0.6)}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
@@ -73,12 +85,18 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .header-right{display:flex;align-items:center;gap:12px}
 
 /* ASCII logo (use monospace for exact ASCII art) */
-.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:18px;line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
+.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:clamp(12px, 1.2vw + 10px, 18px);line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
 
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
 
-/* ASCII pre — constrain so ASCII never forces layout reflow */
-.ascii-pre{position:relative;display:inline-block;white-space:pre;font-family:'Hack','VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:17px;min-height:5em;--ascii-caret-gap:-16ch;--ascii-inline-gap:9.6ch;--ascii-caret-gap-expanded:-24ch;--ascii-inline-gap-expanded:14.4ch;}
+/* ASCII pre — constrain so ASCII never forces layout reflow; scale fluidly with viewport */
+.ascii-pre{position:relative;display:inline-block;white-space:pre;font-family:'Hack','VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:clamp(10px, 1.6vw + 8px, 17px);min-height:5em;--ascii-caret-gap:-16ch;--ascii-inline-gap:9.6ch;--ascii-caret-gap-expanded:-24ch;--ascii-inline-gap-expanded:14.4ch;}
+
+/* ensure very long ASCII lines never force the page wider than the viewport */
+.ascii-pre{word-break:normal;white-space:pre;}
+@media (max-width:520px){
+  .ascii-pre{font-size:clamp(9px, 3.2vw + 6px, 13px)}
+}
 
 /* neon text utilities — add `neon` class or use `ascii-pre neon` for ASCII art */
 .neon{color:var(--accent);text-shadow:0 0 2px rgba(255,255,255,0.9),0 0 8px rgba(0,230,168,0.9),0 0 20px rgba(123,97,255,0.65),0 0 40px rgba(255,122,166,0.35);filter:drop-shadow(0 8px 32px rgba(0,230,168,0.12));font-weight:700;-webkit-font-smoothing:antialiased;transition:text-shadow var(--ui-transition-duration) var(--ui-transition-ease),transform var(--ui-transition-duration) var(--ui-transition-ease);will-change:text-shadow,transform}

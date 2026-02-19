@@ -182,7 +182,7 @@ export default function App(): JSX.Element {
 
 
   return (
-    <>
+    <div className="site-wrapper">
       <pre className="count-bg" aria-hidden>{bgText}</pre>
       <div className="container">
       <div className="header" style={{ gridColumn: '1 / -1' }}>
@@ -303,7 +303,7 @@ $ python tools/web_hands.py open "https://nowon.example" --headful`}
 
       <footer style={{ gridColumn: '1 / -1' }}>© nowon — Computers &amp; AI</footer>
     </div>
-  </>
+    </div>
   );
 }
 
