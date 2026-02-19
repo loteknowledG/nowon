@@ -85,17 +85,17 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .header-right{display:flex;align-items:center;gap:12px}
 
 /* ASCII logo (use monospace for exact ASCII art) */
-.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:clamp(12px, 1.2vw + 10px, 18px);line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
+.ascii-logo{position:relative;font-family:'Press Start 2P','VT323',monospace;font-size:clamp(12px, 1.6vw, 18px);line-height:1;display:inline-block;color:transparent;background:linear-gradient(90deg,#00e6a8,#7b61ff,#ff7aa6);-webkit-background-clip:text;background-clip:text;padding:6px 10px;border-radius:6px;margin-right:8px;text-transform:lowercase;letter-spacing:2px;filter:drop-shadow(0 6px 18px rgba(2,6,23,0.6));max-width:100%;box-sizing:border-box;overflow:hidden;background-size:200% 100%;animation:logo-scan 3.6s linear infinite}
 
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
 
 /* ASCII pre — constrain so ASCII never forces layout reflow; scale fluidly with viewport */
-.ascii-pre{position:relative;display:inline-block;white-space:pre;font-family:'Hack','VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:clamp(10px, 1.6vw + 8px, 17px);min-height:5em;--ascii-caret-gap:-16ch;--ascii-inline-gap:9.6ch;--ascii-caret-gap-expanded:-24ch;--ascii-inline-gap-expanded:14.4ch;}
+.ascii-pre{position:relative;display:inline-block;white-space:pre;font-family:'Hack','VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:clamp(9px, 1.6vw, 17px);min-height:5em;--ascii-caret-gap:-16ch;--ascii-inline-gap:9.6ch;--ascii-caret-gap-expanded:-24ch;--ascii-inline-gap-expanded:14.4ch;} 
 
 /* ensure very long ASCII lines never force the page wider than the viewport */
 .ascii-pre{word-break:normal;white-space:pre;}
 @media (max-width:520px){
-  .ascii-pre{font-size:clamp(9px, 3.2vw + 6px, 13px)}
+  .ascii-pre{font-size:clamp(8px, 3.2vw, 13px)}
 }
 
 /* neon text utilities — add `neon` class or use `ascii-pre neon` for ASCII art */
