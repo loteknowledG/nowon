@@ -250,13 +250,7 @@ export default function App(): JSX.Element {
           {import.meta.env.DEV && (
             <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
               <div className="dev-debug-panel" role="group" aria-label="ASCII debug controls">
-                <button className="btn ghost" onClick={() => {
-                  // highlight erased/typist once
-                  document.documentElement.classList.add('debug-overlay');
-                  setTimeout(() => document.documentElement.classList.remove('debug-overlay'), 6000);
-                }}>
-                  Highlight (6s)
-                </button>
+
 
                 <button className="btn ghost" onClick={() => {
                   // toggle persistent overlay
