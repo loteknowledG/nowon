@@ -1,16 +1,21 @@
 import React, { useEffect, useState } from 'react';
 
 export default function App(): JSX.Element {
+  // show one word at a time (prevent wrapping / layout shifts)
   const phrases = [
-    'Computers & AI',
-    'Secure agent platforms',
-    'Automation & intelligence',
+    'Computers',
+    'AI',
+    'Secure',
+    'agent',
+    'platforms',
+    'Automation',
+    'intelligence',
   ];
   const [text, setText] = useState('');
   const [pIdx, setPIdx] = useState(0);
   const [charIdx, setCharIdx] = useState(0);
   const [deleting, setDeleting] = useState(false);
-  const [theme, setTheme] = useState<string>(() => (localStorage.getItem('nowon-theme') === 'light' ? 'light' : 'dark'));
+  const [theme] = useState<string>(() => 'dark');
 
   useEffect(() => {
     if (theme === 'light') document.documentElement.dataset.theme = 'light';
@@ -19,9 +24,7 @@ export default function App(): JSX.Element {
   }, [theme]);
 
   useEffect(() => {
-    let t = 80;
     const full = phrases[pIdx];
-    if (deleting) t = 40;
     const timer = window.setTimeout(() => {
       if (!deleting) {
         setCharIdx((i) => i + 1);
@@ -50,34 +53,80 @@ export default function App(): JSX.Element {
   const [asciiIdx, setAsciiIdx] = useState(0);
   const [displayStr, setDisplayStr] = useState('');
   const [waveActive, setWaveActive] = useState(false);
-  const [eraserPos, setEraserPos] = useState<number | null>(null);
+  const [eraserPos] = useState<number | null>(null);
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
+  const [debugInfo, setDebugInfo] = useState({ erasedCount: 0, typistIndex: -1, fontSize: '—' });
 
-  // initial type-in (character by character)
+  // kicker: show one word at a time (prevents wrap/layout shift)
+  const kickerWords = ['Computers', 'AI', 'Agents'];
+  void kickerWords; // intentionally kept for semantic/SEO; pill UI removed
+
+  // background counting grid (subtle, low-contrast rows of numbers that count up)
+  const [countOffset, setCountOffset] = useState<bigint>(0n);
+  const [bgGrid, setBgGrid] = useState({ rows: 20, cols: 120 });
+
+  useEffect(() => {
+    const calc = () => {
+      // derive rows from the count-bg font-size * line-height (10px * 1.2 = 12px)
+      const lineH = 10 * 1.2; // px — mirrors .count-bg font-size & line-height
+      const rows = Math.max(6, Math.ceil(window.innerHeight / lineH));
+      const cols = Math.max(20, Math.ceil(window.innerWidth / 8));
+      setBgGrid({ rows, cols });
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+
+  // advance the counter offset so numbers appear to be counting up
+  useEffect(() => {
+    const id = window.setInterval(() => setCountOffset((n) => n + 1n), 10); // very fast counting (10ms)
+    return () => clearInterval(id);
+  }, []);
+
+  const bgText = React.useMemo(() => {
+    let s = '';
+    let n = countOffset;
+    for (let r = 0; r < bgGrid.rows; r++) {
+      for (let c = 0; c < bgGrid.cols; c++) {
+        s += n.toString(16).toUpperCase() + ' ';
+        n = n + 1n;
+      }
+      s += '\n';
+    }
+    return s;
+  }, [bgGrid, countOffset]);
+
+  // initial type-in (character by character) — show per-char caret as characters appear
   useEffect(() => {
     if (asciiIdx >= asciiArt.length) return;
     const id = window.setTimeout(() => {
       setAsciiIdx((i) => {
         const next = i + 1;
         setDisplayStr(asciiArt.slice(0, next));
+        // place a per-character caret at the newly-typed char so the write is synchronous
+        setTypistPos(next - 1);
+        window.setTimeout(() => setTypistPos(null), 80);
         return next;
       });
     }, 8);
     return () => clearTimeout(id);
   }, [asciiIdx, asciiArt]);
 
-  // erase → retype wave (CSS-only: toggle `erased` flags; canonical asciiArt is never mutated)
+  // erase → retype wave (start at the beginning and move forward)
+  /* eslint-disable react-hooks/exhaustive-deps */
+  // the effect intentionally does not include `waveActive`/`erased.length` in deps
+  // (managed internally).
   useEffect(() => {
     if (asciiIdx < asciiArt.length) return; // wait until initial type completes
     if (waveActive) return;
     setWaveActive(true);
-    console.log('[ascii] starting wave');
 
     // ensure erased buffer matches ascii length
     if (erased.length !== asciiArt.length) setErased(new Array(asciiArt.length).fill(false));
 
-    const speed = 60;        // ms per erase step — slightly slower so flicker is visible
+    const speed = 37;        // ms per erase step — slightly slower so flicker is visible
     const retypeDelay = 280; // ms to wait before retyping an erased char (visible gap)
     let pos = 0;
     let cancelled = false;
@@ -88,20 +137,19 @@ export default function App(): JSX.Element {
       while (pos < asciiArt.length && asciiArt[pos] === '\n') pos++;
       if (pos < asciiArt.length) {
         const idx = pos;
-        // mark erased (CSS will hide the char and show caret)
-        console.log('[ascii] erase ->', idx);
+        // place the visible typist caret on the character being erased (keeps visual sync)
+        setTypistPos(idx);
+        window.setTimeout(() => setTypistPos(null), Math.max(60, speed));
+
         setErased((prev) => {
           const next = prev.slice();
           next[idx] = true;
           return next;
         });
-        setEraserPos(idx);
-        window.setTimeout(() => setEraserPos(null), Math.max(60, speed));
 
         // schedule retype (un-hide) from canonical
         window.setTimeout(() => {
           if (cancelled) return;
-          console.log('[ascii] retype <-', idx);
           setErased((prev) => {
             const next = prev.slice();
             next[idx] = false;
@@ -129,20 +177,18 @@ export default function App(): JSX.Element {
       setWaveActive(false);
     };
   }, [asciiIdx, asciiArt]);
+  /* eslint-enable react-hooks/exhaustive-deps */
 
-  const triggerWave = () => {
-    console.log('[ascii] manual trigger');
-    setAsciiIdx(asciiArt.length);
-    setWaveActive(false);
-    // effect will start automatically because asciiIdx >= asciiArt.length and waveActive is false
-  };
+
 
   return (
-    <div className="container">
+    <>
+      <pre className="count-bg" aria-hidden>{bgText}</pre>
+      <div className="container">
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre className="ascii-pre">
+            <pre className="ascii-pre neon flicker">
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
@@ -151,18 +197,41 @@ export default function App(): JSX.Element {
                 if (isErased) classList.push('erased');
                 if (isTypist) classList.push('typist-char', 'active-glow');
                 const className = classList.length ? classList.join(' ') : undefined;
+
+                // per-character randomized spark timing (CSS vars injected inline)
+                const sparkCycle = (3 + Math.random() * 7).toFixed(2) + 's'; // 3–10s cycle
+                const sparkDelay = (-Math.random() * parseFloat(sparkCycle)).toFixed(2) + 's';
+                const spanStyle = { ['--spark-cycle']: sparkCycle, ['--spark-delay']: sparkDelay } as React.CSSProperties;
+
                 return (
-                  <span key={i} className={className}>
+                  <span key={i} className={className} style={spanStyle}>
                     {ch === ' ' ? '\u00A0' : ch}
-                    {isErased && <span className="eraser-caret" aria-hidden>█</span>}
-                    {isTypist && <span className="typist-caret ascii-inline-cursor" aria-hidden>|</span>}
+                    {isErased && <span className="eraser-caret" aria-hidden>│</span>}
+                    {isTypist && <span className="typist-caret ascii-inline-cursor" aria-hidden>│</span>}
                   </span>
                 );
               })}
+              { /* inline typing caret: appears at the next write position during initial type-in */ }
+              {asciiIdx < asciiArt.length && typistPos == null && (
+                <span className="ascii-cursor ascii-inline-caret" aria-hidden>│</span>
+              )}
+              {/* decorative ghost caret — preserves the large visual gap while local carets do actual typing/erasing */}
+              <span
+                className="ascii-ghost-caret"
+                aria-hidden
+                style={(() => {
+                  const trackIndex = (eraserPos !== null && eraserPos !== undefined) ? eraserPos : ((typistPos !== null && typistPos !== undefined) ? typistPos : Math.max(0, asciiIdx - 1));
+                  const clamped = Math.max(0, Math.min(trackIndex, asciiArt.length - 1));
+                  const before = asciiArt.slice(0, clamped + 1);
+                  const line = before.split('\n').length - 1;
+                  const lastNl = before.lastIndexOf('\n');
+                  const col = clamped - (lastNl === -1 ? 0 : lastNl + 1);
+                  return { left: `${col}ch`, top: `calc(${line} * 1em + 0.25em)` } as React.CSSProperties;
+                })()}
+              >│</span>
             </pre>
-            <span className="ascii-cursor" aria-hidden>{asciiIdx < asciiArt.length ? '|' : ''}</span>
           </span>
-          <span className="sr-only">NOWON</span>
+          <span className="sr-only">nowon</span>
         </div>
 
         <div className="header-right">
@@ -172,19 +241,47 @@ export default function App(): JSX.Element {
             <a href="#">Docs</a>
             <a href="#">Contact</a>
           </nav>
-          <button className="theme-toggle" onClick={() => setTheme((t) => (t === 'light' ? 'dark' : 'light'))}>
-            Toggle theme
-          </button>
-          <button className="theme-toggle" onClick={triggerWave} title="Force the ASCII erase/retype wave">
-            Trigger wave
-          </button>
+          {import.meta.env.DEV && (
+            <div style={{ display: 'flex', alignItems: 'center', gap: 8, marginLeft: 12 }}>
+              <div className="dev-debug-panel" role="group" aria-label="ASCII debug controls">
+
+
+                <button className="btn ghost" onClick={() => {
+                  // toggle persistent overlay
+                  const next = !document.documentElement.classList.contains('debug-overlay');
+                  if (next) document.documentElement.classList.add('debug-overlay');
+                  else document.documentElement.classList.remove('debug-overlay');
+                }}>
+                  Toggle overlay
+                </button>
+
+                <button className="btn ghost" onClick={() => {
+                  // diagnostics: update local debug info state
+                  const erasedCount = document.querySelectorAll('.ascii-pre span.erased').length;
+                  const typistIndex = typistPos ?? -1;
+                  const asciiEl = document.querySelector('.ascii-pre');
+                  const fontSize = asciiEl ? getComputedStyle(asciiEl).fontSize : '—';
+                  setDebugInfo({ erasedCount, typistIndex, fontSize });
+                }}>
+                  Diagnostics
+                </button>
+
+                <div className="dev-debug-info">
+                  <div style={{ fontSize: 12, color: 'var(--muted)' }}>
+                    Erased: <strong style={{ color: 'var(--accent)' }}>{debugInfo.erasedCount}</strong>
+                    &nbsp;•&nbsp; Typist: <strong style={{ color: 'var(--accent)' }}>{debugInfo.typistIndex < 0 ? '—' : debugInfo.typistIndex}</strong>
+                    &nbsp;•&nbsp; Font: <strong style={{ color: 'var(--accent)' }}>{debugInfo.fontSize}</strong>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
       <section className="hero">
-        <div className="kicker">Computers • AI • Agents</div>
         <h1>
-          Nowon — where <span className="type">{text}</span>
+          nowon — where <span className="type">{text || '\u00A0'}</span>
         </h1>
         <p className="lead">Build secure, agentified automation for the enterprise. CLI-first, privacy-conscious, and designed for teams that treat automation like engineering.</p>
         <div className="ctas">
@@ -210,7 +307,7 @@ export default function App(): JSX.Element {
           <div className="cli-badge"><span className="dot" /> <span className="mon">cli.nowon — pif • demo</span></div>
           <pre>
 {`$ curl -o pif.mjs https://nothumanallowed.com/cli/pif.mjs
-$ node pif.mjs register --name "Nowon-Agent"
+$ node pif.mjs register --name "nowon-Agent"
 $ pif template:list --category=automation
 $ pif evolve --task "security audit"
 
@@ -229,18 +326,19 @@ $ python tools/web_hands.py open "https://nowon.example" --headful`}
 
       <div className="ai-stub" aria-hidden>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 6px 12px' }}>
-          <strong>Nowon AI (beta)</strong>
+          <strong>nowon AI (beta)</strong>
           <small style={{ color: 'var(--muted)' }}>• client stub</small>
         </header>
         <div className="messages" id="msgs"><div style={{ opacity: 0.6, color: 'var(--muted)', fontSize: 12 }}>AI stub ready — connect a backend to enable messages.</div></div>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <input placeholder="Ask Nowon..." disabled />
+          <input placeholder="Ask nowon..." disabled />
           <button className="btn ghost" style={{ padding: '8px 10px' }}>Connect</button>
         </div>
       </div>
 
-      <footer style={{ gridColumn: '1 / -1' }}>© Nowon — Computers &amp; AI</footer>
+      <footer style={{ gridColumn: '1 / -1' }}>© nowon — Computers &amp; AI</footer>
     </div>
+  </>
   );
 }
 

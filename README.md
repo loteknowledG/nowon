@@ -1,5 +1,7 @@
 # nowon — Vite + React + TypeScript PWA
 
+Live demo: https://loteknowledG.github.io/nowon
+
 Minimal starter scaffolded with Bun support.
 
 Quick start (using Bun):

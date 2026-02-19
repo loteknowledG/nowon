@@ -1,5 +1,6 @@
 :root{
   --bg:#071024;
+  --fg:#e6eef8;
   --panel:rgba(255,255,255,0.03);
   --accent:#00e6a8;
   --accent2:#7b61ff;
@@ -10,31 +11,39 @@
   --ascii-wave-ease: cubic-bezier(.2,.9,.2,1);
   --ui-transition-duration: 0.28s;
   --ui-transition-ease: cubic-bezier(.2,.8,.2,1);
+  /* typing speed (matches JS autotype per-character interval) */
+  --ascii-typing-speed: 8ms;
+  --ascii-typing-ease: linear;
 }
-[data-theme="light"]{ --bg:#f7f9fb; --panel:rgba(2,6,23,0.03); --accent:#0068ff; --accent2:#ff4da3; --muted:#6b7280 }
+[data-theme="light"]{ --bg:#f7f9fb; --fg:#041024; --panel:rgba(2,6,23,0.03); --accent:#0068ff; --accent2:#ff4da3; --muted:#6b7280 }
 html,body,#root{height:100%;margin:0}
-body{font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:#e6eef8;background:var(--bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
+body{font-family:'Hack',Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",Roboto,"Helvetica Neue",Arial;color:var(--fg);background:var(--bg);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale}
 /* animated grid / subtle particles */
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 40px), radial-gradient(circle at 10% 20%, rgba(123,97,255,0.06), transparent 15%), repeating-linear-gradient(transparent, transparent 24px, rgba(255,255,255,0.02) 25px), repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(255,255,255,0.02) 25px);background-size:100% 100%,60% 60%,40px 40px,40px 40px;animation:bgShift 22s linear infinite;mix-blend-mode:overlay;opacity:0.9}
 @keyframes bgShift{from{background-position:0 0,0 0,0 0,0 0}to{background-position:-600px 0,600px -200px,40px 40px,-40px -40px}}
 
+/* counting numbers background (subtle, low-contrast) */
+.count-bg{position:fixed;inset:0;z-index:0;pointer-events:none;font-family:'Hack',monospace;font-size:10px;line-height:1.2;white-space:pre;overflow:hidden;color:rgba(255,255,255,0.04);padding:0 28px;box-sizing:border-box}
+[data-theme="light"] .count-bg{color:rgba(2,6,23,0.04)}
+@media (max-width:980px){.count-bg{font-size:9px}}
+@media (max-width:520px){.count-bg{font-size:8px;opacity:0.06}}
+
 /* layout */
 .container{position:relative;z-index:5;max-width:1200px;margin:24px auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
-.logo{font-family:'Press Start 2P',monospace;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:16px;text-transform:uppercase}
+
 nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
 .hero{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-.kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(123,97,255,0.12), rgba(0,230,168,0.06));color:var(--accent);font-weight:600;font-size:12px;margin-bottom:18px}
 h1{font-size:34px;margin:0 0 14px;line-height:1.05;font-weight:800}
-h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px}
+h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px;display:inline-block;min-width:12ch;text-align:left;min-height:1.15em;vertical-align:middle}
 .lead{color:var(--muted);margin:0 0 22px;max-width:70%}
 .ctas{display:flex;gap:12px}
 .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;color:#041024;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(11,16,36,0.6)}
 .btn.ghost{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);font-weight:600}
 
 /* CLI card */
-.cli-card{background:linear-gradient(180deg, rgba(0,0,0,0.3), rgba(255,255,255,0.02));border-radius:12px;padding:18px;color:#bfeef0;font-family:'VT323', SFMono-Regular,Menlo,monospace;font-size:15px;border:1px solid rgba(255,255,255,0.03);letter-spacing:0.6px}
-.cli-card pre{margin:0;white-space:pre-wrap;font-family:'VT323', SFMono-Regular,Menlo,monospace}
+.cli-card{background:linear-gradient(180deg, rgba(0,0,0,0.3), rgba(255,255,255,0.02));border-radius:12px;padding:18px;color:var(--fg);font-family:'Hack','VT323', SFMono-Regular,Menlo,monospace;font-size:15px;border:1px solid rgba(255,255,255,0.03);letter-spacing:0.6px}
+.cli-card pre{margin:0;white-space:pre-wrap;font-family:'Hack','VT323', SFMono-Regular,Menlo,monospace}
 .cli-badge{display:inline-flex;gap:8px;align-items:center;margin-bottom:10px}
 .dot{width:10px;height:10px;border-radius:50%;background:linear-gradient(90deg,#ff7a7a,#ffd36b);box-shadow:0 2px 6px rgba(0,0,0,0.6)}
 
@@ -48,7 +57,7 @@ h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; fo
 .ai-stub header{display:flex;justify-content:space-between;align-items:center;padding:6px 6px 12px}
 .ai-stub .messages{height:120px;overflow:auto;padding:8px;background:rgba(0,0,0,0.06);border-radius:8px;margin-bottom:8px}
 .ai-stub input{width:100%;padding:8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);background:transparent;color:inherit}
-.theme-toggle{background:transparent;border:1px solid rgba(255,255,255,0.06);color:var(--muted);padding:8px;border-radius:8px;cursor:pointer}
+
 
 footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 
@@ -56,7 +65,7 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 @media (max-width:980px){.container{grid-template-columns:1fr;padding:28px}.features{grid-template-columns:repeat(2,1fr)}.ai-stub{width:92%;left:4%;right:4%;}}
 @media (max-width:520px){.features{grid-template-columns:1fr}.lead{max-width:100%}}
 
-.mon {font-family:'VT323', SFMono-Regular,Menlo,monospace;color:#9be7ff;font-size:14px;letter-spacing:0.6px}
+.mon {font-family:'Hack','VT323', SFMono-Regular,Menlo,monospace;color:#9be7ff;font-size:14px;letter-spacing:0.6px}
 
 /* header layout helpers */
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;flex-wrap:wrap;gap:12px}
@@ -69,26 +78,89 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 .ascii-logo::after{content:"";position:absolute;inset:0;border-radius:6px;pointer-events:none;background:linear-gradient(90deg,rgba(255,255,255,0.06) 0%, rgba(255,255,255,0.18) 50%, rgba(255,255,255,0.06) 100%);mix-blend-mode:screen;transform:translateX(-120%);opacity:0.55;animation:logo-sheen 3.6s linear infinite}
 
 /* ASCII pre — constrain so ASCII never forces layout reflow */
-.ascii-pre{display:inline-block;white-space:pre;font-family:'VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:17px;min-height:5em}
+.ascii-pre{position:relative;display:inline-block;white-space:pre;font-family:'Hack','VT323',monospace;line-height:1;max-width:100%;overflow:hidden;box-sizing:border-box;font-size:17px;min-height:5em;--ascii-caret-gap:-16ch;--ascii-inline-gap:9.6ch;--ascii-caret-gap-expanded:-24ch;--ascii-inline-gap-expanded:14.4ch;}
+
+/* neon text utilities — add `neon` class or use `ascii-pre neon` for ASCII art */
+.neon{color:var(--accent);text-shadow:0 0 2px rgba(255,255,255,0.9),0 0 8px rgba(0,230,168,0.9),0 0 20px rgba(123,97,255,0.65),0 0 40px rgba(255,122,166,0.35);filter:drop-shadow(0 8px 32px rgba(0,230,168,0.12));font-weight:700;-webkit-font-smoothing:antialiased;transition:text-shadow var(--ui-transition-duration) var(--ui-transition-ease),transform var(--ui-transition-duration) var(--ui-transition-ease);will-change:text-shadow,transform}
+
+/* stronger neon specifically for ASCII pre (preserves monospaced look) */
+.ascii-pre.neon,.ascii-pre.neon .typist-char{color:#eaffff;text-shadow:0 0 2px rgba(255,255,255,0.95),0 0 6px rgba(0,230,168,0.95),0 10px 30px rgba(0,230,168,0.16),0 0 30px rgba(123,97,255,0.45),0 0 60px rgba(255,122,166,0.25)}
+
+/* subtle neon pulse */
+.ascii-pre.neon .typist-char.active-glow{animation:neon-pulse 1.6s ease-in-out infinite}
+@keyframes neon-pulse{0%{text-shadow:0 0 2px rgba(255,255,255,0.95),0 0 6px rgba(0,230,168,0.95),0 10px 30px rgba(0,230,168,0.12);transform:translateY(0)}50%{text-shadow:0 0 4px rgba(255,255,255,1),0 0 12px rgba(0,230,168,1),0 20px 40px rgba(0,230,168,0.18);transform:translateY(-1px)}100%{text-shadow:0 0 2px rgba(255,255,255,0.95),0 0 6px rgba(0,230,168,0.95),0 10px 30px rgba(0,230,168,0.12);transform:translateY(0)}}
+
+/* optional flicker (kept noticeable but still respects reduced motion) */
+@keyframes neon-flicker{
+  0%   {opacity:1; filter:drop-shadow(0 12px 48px rgba(0,230,168,0.20)); text-shadow:0 0 8px rgba(0,230,168,0.9), 0 0 36px rgba(123,97,255,0.45)}
+  2%   {opacity:0.45; filter:none; text-shadow:none}
+  6%   {opacity:1; filter:drop-shadow(0 8px 32px rgba(0,230,168,0.16)); text-shadow:0 0 6px rgba(0,230,168,0.85)}
+  9%   {opacity:0.75; filter:drop-shadow(0 6px 20px rgba(0,230,168,0.10)); text-shadow:0 0 3px rgba(0,230,168,0.6)}
+  30%  {opacity:1}
+  55%  {opacity:0.6; filter:none; text-shadow:none}
+  70%  {opacity:1; filter:drop-shadow(0 14px 56px rgba(0,230,168,0.22)); text-shadow:0 0 10px rgba(0,230,168,0.95)}
+ 100%  {opacity:1}
+}
+/* apply to the pre so the whole block breathes */
+.ascii-pre.neon.flicker{animation:neon-flicker 3.2s linear infinite; will-change:opacity,filter,text-shadow}
+
+/* short 'spark' — a quick, high‑intensity flash that happens at irregular intervals per character
+   -> animation-duration is the overall cycle (long), with the bright spark happening near the cycle end
+   -> per-character randomness is achieved by setting --spark-cycle and --spark-delay inline from React */
+@keyframes neon-spark{
+  0%, 95% { opacity:1; text-shadow: inherit; filter:none; transform:none; }
+  96% { opacity:1; text-shadow:0 0 10px rgba(255,255,255,0.95), 0 0 28px rgba(123,97,255,0.6); transform:translateY(-1px); }
+  97% { opacity:0.6; text-shadow:none; transform:none; }
+  100% { opacity:1; text-shadow: inherit; transform:none; }
+}
+/* apply spark only when .flicker is active; exclude erased characters */
+.ascii-pre.neon.flicker span:not(.erased){
+  animation: neon-spark var(--spark-cycle, 6s) linear infinite var(--spark-delay, 0s);
+  will-change:opacity,text-shadow,transform;
+}
+@media (prefers-reduced-motion:reduce){
+  .ascii-pre.neon.flicker, .ascii-pre.neon.flicker span{animation:none}
+} 
 
 /* typing / erase visual states */
 /* make erased characters visually disappear and show a bold block caret */
 .ascii-pre span{display:inline-block;position:relative;transition:opacity .14s linear}
-/* erased characters fade out to transparent */
-.ascii-pre .erased{color:transparent;opacity:0;transition:opacity .12s linear,color .12s linear;text-shadow:none}
-/* eraser caret sits inside the character box and remains visible while erased */
-.ascii-pre .eraser-caret{position:absolute;left:0;top:0;color:var(--accent2);opacity:1;font-weight:900;font-size:0.95em;line-height:1}
-.ascii-pre .typist-char{color:var(--accent);opacity:1;text-shadow:0 6px 18px rgba(0,230,168,0.12);transition:text-shadow .12s ease,color .12s ease,opacity .12s}
+/* erased characters: disappear immediately so visual sync matches caret */
+.ascii-pre .erased{color:transparent;opacity:0;transition:none;text-shadow:none}
+/* eraser caret sits inside the character box and remains visible while erased — align with typist caret (local caret) */
+.ascii-pre .eraser-caret{position:absolute;left:0;right:auto;top:50%;transform:translateY(-50%);color:var(--accent2);opacity:1;font-weight:900;font-size:1em;line-height:1;animation:ascii-caret-pulse 260ms linear 1, ascii-caret-blink 900ms steps(1,start) infinite;transition:opacity .12s linear;will-change:transform,opacity}
+.ascii-pre .typist-char{color:var(--accent2);opacity:1;text-shadow:0 6px 18px rgba(0,230,168,0.12);transition:text-shadow .12s ease,color .12s ease,opacity .12s}
 /* vertical inline caret that blinks while typing */
-.ascii-pre .typist-caret{position:absolute;right:-0.12ch;top:50%;transform:translateY(-50%);color:var(--accent);opacity:1;font-weight:900;font-size:1em;line-height:1}
+.ascii-pre .typist-caret{position:absolute;left:0;right:auto;top:50%;transform:translateY(-50%);color:var(--accent2);opacity:1;font-weight:900;font-size:1em;line-height:1;transition:none}
+
+/* per-character expanded gap: triggered when a span is the typist target or erased */
+/* local per-character caret — kept at the character (no large offset) */
+.ascii-pre span.typist-char .typist-caret, .ascii-pre span.erased .typist-caret{left:0;right:auto;transition:none}
+
 .ascii-pre .typist-caret.ascii-inline-cursor{animation:ascii-caret-blink 900ms steps(1,start) infinite}
 @keyframes ascii-caret-blink{0%,49%{opacity:1}50%,100%{opacity:0}}
+
+/* inline caret used during initial type-in (placed inside the pre at write position) */
+.ascii-pre .ascii-inline-caret{display:inline-block;color:var(--accent2);font-weight:900;font-size:1em;line-height:1;vertical-align:middle;margin-left:var(--ascii-inline-gap);transition:margin-left var(--ascii-typing-speed) var(--ascii-typing-ease);animation:ascii-caret-blink 900ms steps(1,start) infinite}
+
+/* decorative ghost caret (preserves large visual gap) — positioned inside the pre and follows active index */
+.ascii-pre .ascii-ghost-caret{position:absolute;left:0;top:0;transform:translate(-0.1ch, -0.25em);color:var(--accent2);opacity:0.95;font-weight:900;font-size:1em;line-height:1;pointer-events:none;animation:ascii-caret-blink 900ms steps(1,start) infinite;transition:left var(--ascii-typing-speed) var(--ascii-typing-ease),top var(--ascii-typing-speed) var(--ascii-typing-ease),opacity .12s ease}
+
+
+
+/* responsive: reduce caret gap on small screens so it doesn't overflow */
+@media (max-width:520px){
+  .ascii-pre{--ascii-caret-gap:-1.6ch;--ascii-inline-gap:1.0ch}
+  .ascii-pre .typist-caret{left:0;right:auto}
+  .ascii-pre .ascii-inline-caret{margin-left:var(--ascii-inline-gap)}
+} 
+
 .ascii-pre .active-glow{animation:ascii-typist-glow 700ms ease-in-out infinite}
 @keyframes ascii-typist-glow{0%{text-shadow:0 0 0 rgba(0,0,0,0)}50%{text-shadow:0 8px 24px rgba(0,230,168,0.18)}100%{text-shadow:0 0 0 rgba(0,0,0,0)}}
 /* subtle caret pulse while erased */
 .ascii-pre .eraser-caret{animation:ascii-caret-pulse 260ms linear 1}
 @keyframes ascii-caret-pulse{0%{transform:translateY(-1px) scale(1)}50%{transform:translateY(-2px) scale(1.05)}100%{transform:translateY(-1px) scale(1)}}
-@media (prefers-reduced-motion:reduce){.ascii-pre .typist-caret.ascii-inline-cursor,.ascii-pre .eraser-caret{animation:none}}
+@media (prefers-reduced-motion:reduce){.ascii-pre .typist-caret.ascii-inline-cursor,.ascii-pre .eraser-caret{animation:none}.ascii-pre .typist-caret,.ascii-pre .ascii-inline-caret{transition:none}}
 
 @keyframes logo-scan{0%{background-position:0% 50%}50%{background-position:100% 50%}100%{background-position:0% 50%}}
 @keyframes logo-sheen{0%{transform:translateX(-120%);opacity:0}40%{opacity:0.06}50%{transform:translateX(120%);opacity:0.85}100%{transform:translateX(120%);opacity:0}}
@@ -97,13 +169,18 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 @media (prefers-reduced-motion:reduce){.ascii-logo,.ascii-logo::after{animation:none;transition:none}}
 .sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
 
-/* small caret badge to mimic CLI prompt */
-.caret{display:inline-flex;align-items:center;justify-content:center;width:38px;height:38px;border-radius:8px;background:linear-gradient(90deg,#ff7aa6,#7b61ff);color:#041024;font-weight:700;font-family:'Press Start 2P',monospace;margin-right:8px;box-shadow:0 8px 30px rgba(11,16,36,0.6);}
+/* Dev-only debug helpers (visible when `document.documentElement` has .debug-overlay) */
+.debug-overlay .ascii-pre span.erased{outline:3px solid rgba(255,0,0,0.6);background:rgba(255,0,0,0.03);border-radius:2px}
+.debug-overlay .ascii-pre span.typist-char{outline:3px solid rgba(255,255,0,0.85);background:rgba(255,255,0,0.03);border-radius:2px}
+.dev-debug-panel{display:flex;gap:8px;align-items:center}
+.dev-debug-info{margin-left:10px;color:var(--muted);font-size:12px}
+.dev-debug-panel .btn{padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:var(--muted);font-size:12px}
+
 
 /* terminal-like hero input */
-.terminal-card{margin-top:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:10px 12px;display:flex;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.04);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 12px 40px rgba(2,6,23,0.6);color:#dff;font-family:'VT323',monospace;font-size:13px}
+.terminal-card{margin-top:20px;background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));border-radius:10px;padding:10px 12px;display:flex;gap:12px;align-items:center;border:1px solid rgba(255,255,255,0.04);box-shadow:inset 0 1px 0 rgba(255,255,255,0.02), 0 12px 40px rgba(2,6,23,0.6);color:var(--fg);font-family:'VT323',monospace;font-size:13px}
 .terminal-left{width:14px;height:24px;border-radius:5px;background:linear-gradient(180deg,#00e6a8,#7b61ff);box-shadow:0 6px 18px rgba(0,0,0,0.6)}
-.terminal-input{flex:1;background:transparent;border:none;color:inherit;outline:none;font-family:'VT323',monospace;font-size:14px;padding:6px;border-radius:6px}
+.terminal-input{flex:1;background:transparent;border:none;color:inherit;outline:none;font-family:'Hack','VT323',monospace;font-size:14px;padding:6px;border-radius:6px}
 .terminal-meta{background:rgba(0,0,0,0.25);padding:6px 8px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);color:var(--muted);font-size:11px;display:flex;gap:8px;align-items:center}
 .term-badge{background:linear-gradient(90deg,#7b61ff,#00e6a8);color:#041024;padding:4px 8px;border-radius:6px;font-weight:800;letter-spacing:0.6px;font-size:11px}
 
@@ -115,6 +192,4 @@ footer{opacity:0.9;color:var(--muted);text-align:center;margin:44px 0 8px}
 }
 
 
-/* ASCII figlet logo */
-.ascii-logo{font-family:'VT323','Press Start 2P',monospace;color:var(--accent);background:linear-gradient(180deg, rgba(255,255,255,0.02), transparent);padding:6px 10px;border-radius:6px;display:inline-block;white-space:pre;line-height:1;font-size:12px;margin-right:8px}
-.sr-only{position:absolute!important;height:1px;width:1px;overflow:hidden;clip:rect(1px,1px,1px,1px);white-space:nowrap}
+
