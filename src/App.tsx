@@ -123,35 +123,38 @@ export default function App(): JSX.Element {
       const pre = asciiRef.current as HTMLElement | null;
       if (!pre) return;
       const parent = pre.parentElement as HTMLElement | null;
-      // apply a small safety margin so characters never touch the container edges
-      const available = (parent ? parent.clientWidth - 12 /* padding guard */ : Math.max(320, window.innerWidth - 48)) * 0.96;
-      const lines = asciiArt.split('\n');
-      const maxChars = Math.max(...lines.map((l) => l.length));
-      if (!maxChars) return;
+      const available = (parent ? parent.clientWidth - 12 : Math.max(320, window.innerWidth - 48)) * 0.96;
 
-      // measure a single-monospace character width at a known font-size to derive ratio
+      // pick the actual longest line (keeps punctuation/spacing accurate)
+      const lines = asciiArt.split('\n');
+      const longest = lines.reduce((a, b) => (a.length >= b.length ? a : b), '');
+      if (!longest) return;
+
+      // measure the rendered width of the longest line at font-size:1vw, then scale
       const probe = document.createElement('span');
       probe.style.position = 'absolute';
       probe.style.visibility = 'hidden';
+      probe.style.whiteSpace = 'pre';
       probe.style.fontFamily = getComputedStyle(pre).fontFamily || "'Hack','VT323',monospace";
-      probe.style.fontSize = '100px';
-      probe.textContent = '0';
+      probe.style.fontSize = '1vw';
+      probe.textContent = longest;
       document.body.appendChild(probe);
-      const charWidthAt100 = probe.getBoundingClientRect().width || 1;
+      const measuredAt1vw = probe.getBoundingClientRect().width || 1;
       document.body.removeChild(probe);
-      const charPerPx = charWidthAt100 / 100; // px width per 1px font-size
 
-      const targetCharWidth = Math.max(1, available / maxChars);
-      const targetFontPx = Math.floor(targetCharWidth / charPerPx);
-      // limit by viewport height so ASCII never overflows vertically
-      const numLines = lines.length || 1;
-      const maxFontPxByHeight = Math.max(8, Math.floor((window.innerHeight * 0.6) / numLines));
-      const finalFontPx = Math.max(8, Math.min(40, Math.min(targetFontPx, maxFontPxByHeight)));
-      // convert px -> vw (viewport width units)
-      const finalFontVw = (finalFontPx / window.innerWidth) * 100;
-      // clamp vw to sensible range
-      const clampedVw = Math.max(0.4, Math.min(10, finalFontVw));
-      setAsciiFontVw(clampedVw);
+      // scale factor to make measuredAt1vw fit into `available` px
+      const scaleFactor = Math.max(0.1, available / measuredAt1vw);
+      const clampedVw = Math.max(0.4, Math.min(10, scaleFactor));
+
+      // cap by viewport height so ASCII never overflows vertically
+      const fontPx = (clampedVw / 100) * window.innerWidth;
+      const maxFontPxByHeight = Math.floor((window.innerHeight * 0.6) / Math.max(1, lines.length));
+      if (fontPx > maxFontPxByHeight) {
+        const adjustedVw = (maxFontPxByHeight / window.innerWidth) * 100;
+        setAsciiFontVw(Math.max(0.4, Math.min(clampedVw, adjustedVw)));
+      } else {
+        setAsciiFontVw(clampedVw);
+      }
     };
 
     computeAsciiFont();
