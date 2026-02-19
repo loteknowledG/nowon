@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Nowon — DevTools ASCII Helper",
+  "name": "nowon — DevTools ASCII Helper",
   "version": "0.1.0",
-  "description": "DevTools panel to debug and control the Nowon ASCII animation (Trigger wave, Highlight erased/typist, diagnostics).",
+  "description": "DevTools panel to debug and control the nowon ASCII animation (Trigger wave, Highlight erased/typist, diagnostics).",
   "icons": { "48": "icon-48.png" },
   "devtools_page": "devtools.html",
   "permissions": ["activeTab", "scripting"]

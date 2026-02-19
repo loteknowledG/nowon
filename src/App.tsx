@@ -1,10 +1,15 @@
 import React, { useEffect, useState } from 'react';
 
 export default function App(): JSX.Element {
+  // show one word at a time (prevent wrapping / layout shifts)
   const phrases = [
-    'Computers & AI',
-    'Secure agent platforms',
-    'Automation & intelligence',
+    'Computers',
+    'AI',
+    'Secure',
+    'agent',
+    'platforms',
+    'Automation',
+    'intelligence',
   ];
   const [text, setText] = useState('');
   const [pIdx, setPIdx] = useState(0);
@@ -54,6 +59,50 @@ export default function App(): JSX.Element {
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
   const [debugInfo, setDebugInfo] = useState({ erasedCount: 0, typistIndex: -1, fontSize: '—' });
+
+  // kicker: show one word at a time (prevents wrap/layout shift)
+  const kickerWords = ['Computers', 'AI', 'Agents'];
+  const [kickerIdx, setKickerIdx] = useState(0);
+  useEffect(() => {
+    const id = window.setInterval(() => setKickerIdx((i) => (i + 1) % kickerWords.length), 2000);
+    return () => clearInterval(id);
+  }, []);
+
+  // background counting grid (subtle, low-contrast rows of numbers that count up)
+  const [countOffset, setCountOffset] = useState<bigint>(0n);
+  const [bgGrid, setBgGrid] = useState({ rows: 20, cols: 120 });
+
+  useEffect(() => {
+    const calc = () => {
+      // derive rows from the count-bg font-size * line-height (10px * 1.2 = 12px)
+      const lineH = 10 * 1.2; // px — mirrors .count-bg font-size & line-height
+      const rows = Math.max(6, Math.ceil(window.innerHeight / lineH));
+      const cols = Math.max(20, Math.ceil(window.innerWidth / 8));
+      setBgGrid({ rows, cols });
+    };
+    calc();
+    window.addEventListener('resize', calc);
+    return () => window.removeEventListener('resize', calc);
+  }, []);
+
+  // advance the counter offset so numbers appear to be counting up
+  useEffect(() => {
+    const id = window.setInterval(() => setCountOffset((n) => n + 1n), 10); // very fast counting (10ms)
+    return () => clearInterval(id);
+  }, []);
+
+  const bgText = React.useMemo(() => {
+    let s = '';
+    let n = countOffset;
+    for (let r = 0; r < bgGrid.rows; r++) {
+      for (let c = 0; c < bgGrid.cols; c++) {
+        s += n.toString(16).toUpperCase() + ' ';
+        n = n + 1n;
+      }
+      s += '\n';
+    }
+    return s;
+  }, [bgGrid, countOffset]);
 
   // initial type-in (character by character) — show per-char caret as characters appear
   useEffect(() => {
@@ -139,7 +188,9 @@ export default function App(): JSX.Element {
 
 
   return (
-    <div className="container">
+    <>
+      <pre className="count-bg" aria-hidden>{bgText}</pre>
+      <div className="container">
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
@@ -186,7 +237,7 @@ export default function App(): JSX.Element {
               >│</span>
             </pre>
           </span>
-          <span className="sr-only">NOWON</span>
+          <span className="sr-only">nowon</span>
         </div>
 
         <div className="header-right">
@@ -241,9 +292,19 @@ export default function App(): JSX.Element {
       </div>
 
       <section className="hero">
-        <div className="kicker">Computers • AI • Agents</div>
+        <div className="kicker" aria-live="polite">
+          {kickerWords.map((w, i) => (
+            <span
+              key={w}
+              className={`kicker-word ${i === kickerIdx ? 'is-active' : ''}`}
+              aria-hidden={i === kickerIdx ? 'false' : 'true'}
+            >
+              {w}
+            </span>
+          ))}
+        </div>
         <h1>
-          Nowon — where <span className="type">{text}</span>
+          nowon — where <span className="type">{text || '\u00A0'}</span>
         </h1>
         <p className="lead">Build secure, agentified automation for the enterprise. CLI-first, privacy-conscious, and designed for teams that treat automation like engineering.</p>
         <div className="ctas">
@@ -269,7 +330,7 @@ export default function App(): JSX.Element {
           <div className="cli-badge"><span className="dot" /> <span className="mon">cli.nowon — pif • demo</span></div>
           <pre>
 {`$ curl -o pif.mjs https://nothumanallowed.com/cli/pif.mjs
-$ node pif.mjs register --name "Nowon-Agent"
+$ node pif.mjs register --name "nowon-Agent"
 $ pif template:list --category=automation
 $ pif evolve --task "security audit"
 
@@ -288,18 +349,19 @@ $ python tools/web_hands.py open "https://nowon.example" --headful`}
 
       <div className="ai-stub" aria-hidden>
         <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 6px 12px' }}>
-          <strong>Nowon AI (beta)</strong>
+          <strong>nowon AI (beta)</strong>
           <small style={{ color: 'var(--muted)' }}>• client stub</small>
         </header>
         <div className="messages" id="msgs"><div style={{ opacity: 0.6, color: 'var(--muted)', fontSize: 12 }}>AI stub ready — connect a backend to enable messages.</div></div>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <input placeholder="Ask Nowon..." disabled />
+          <input placeholder="Ask nowon..." disabled />
           <button className="btn ghost" style={{ padding: '8px 10px' }}>Connect</button>
         </div>
       </div>
 
-      <footer style={{ gridColumn: '1 / -1' }}>© Nowon — Computers &amp; AI</footer>
+      <footer style={{ gridColumn: '1 / -1' }}>© nowon — Computers &amp; AI</footer>
     </div>
+  </>
   );
 }
 

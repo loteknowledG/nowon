@@ -22,15 +22,23 @@ body{font-family:'Hack',Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",R
 body::before{content:"";position:fixed;inset:0;z-index:0;pointer-events:none;background-image:radial-gradient(rgba(255,255,255,0.02) 1px, transparent 40px), radial-gradient(circle at 10% 20%, rgba(123,97,255,0.06), transparent 15%), repeating-linear-gradient(transparent, transparent 24px, rgba(255,255,255,0.02) 25px), repeating-linear-gradient(90deg, transparent, transparent 24px, rgba(255,255,255,0.02) 25px);background-size:100% 100%,60% 60%,40px 40px,40px 40px;animation:bgShift 22s linear infinite;mix-blend-mode:overlay;opacity:0.9}
 @keyframes bgShift{from{background-position:0 0,0 0,0 0,0 0}to{background-position:-600px 0,600px -200px,40px 40px,-40px -40px}}
 
+/* counting numbers background (subtle, low-contrast) */
+.count-bg{position:fixed;inset:0;z-index:0;pointer-events:none;font-family:'Hack',monospace;font-size:10px;line-height:1.2;white-space:pre;overflow:hidden;color:rgba(255,255,255,0.04);padding:0 28px;box-sizing:border-box}
+[data-theme="light"] .count-bg{color:rgba(2,6,23,0.04)}
+@media (max-width:980px){.count-bg{font-size:9px}}
+@media (max-width:520px){.count-bg{font-size:8px;opacity:0.06}}
+
 /* layout */
 .container{position:relative;z-index:5;max-width:1200px;margin:24px auto;padding:24px;display:grid;grid-template-columns:1fr 380px;gap:28px;align-items:start}
 .header{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
 .logo{font-family:'Press Start 2P',monospace;font-weight:700;letter-spacing:1px;background:linear-gradient(90deg,var(--accent),var(--accent2));-webkit-background-clip:text;background-clip:text;color:transparent;font-size:16px;text-transform:uppercase}
 nav a{color:var(--muted);text-decoration:none;margin-left:18px;font-size:14px}
 .hero{padding:28px;background:linear-gradient(180deg, rgba(255,255,255,0.01), transparent);border-radius:14px;box-shadow:0 8px 30px rgba(2,6,23,0.6);border:1px solid rgba(255,255,255,0.03)}
-.kicker{display:inline-block;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(123,97,255,0.12), rgba(0,230,168,0.06));color:var(--accent);font-weight:600;font-size:12px;margin-bottom:18px}
+.kicker{position:relative;display:inline-flex;align-items:center;justify-content:center;padding:6px 10px;border-radius:999px;background:linear-gradient(90deg, rgba(123,97,255,0.12), rgba(0,230,168,0.06));color:var(--accent);font-weight:600;font-size:12px;margin-bottom:18px;min-width:10ch;height:2.05em;box-sizing:border-box}
+.kicker .kicker-word{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;opacity:0;transition:opacity .28s ease;pointer-events:none}
+.kicker .kicker-word.is-active{opacity:1}
 h1{font-size:34px;margin:0 0 14px;line-height:1.05;font-weight:800}
-h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px}
+h1 .type{color:var(--accent); font-family:'Press Start 2P','VT323',monospace; font-weight:700; letter-spacing:1px;display:inline-block;min-width:12ch;text-align:left;min-height:1.15em;vertical-align:middle}
 .lead{color:var(--muted);margin:0 0 22px;max-width:70%}
 .ctas{display:flex;gap:12px}
 .btn{background:linear-gradient(90deg,var(--accent),var(--accent2));border:none;color:#041024;padding:10px 14px;border-radius:10px;font-weight:700;cursor:pointer;box-shadow:0 6px 18px rgba(11,16,36,0.6)}
