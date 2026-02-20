@@ -8,7 +8,12 @@ export default defineConfig({
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      includeAssets: ['favicon.svg'],
+      // include fonts in the PWA precache so they're available immediately/offline
+      includeAssets: ['favicon.svg', 'fonts/*.flf'],
+      workbox: {
+        // also ensure workbox will precache the font files (glob pattern)
+        globPatterns: ['**/fonts/*.flf']
+      },
       manifest: {
         name: 'nowon',
         short_name: 'nowon',

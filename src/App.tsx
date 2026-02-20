@@ -1,4 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
+const TuiFtw = React.lazy(() => import('./tui-ftw/index'));
 
 export default function App(): JSX.Element {
   // show one word at a time (prevent wrapping / layout shifts)
@@ -56,9 +57,7 @@ export default function App(): JSX.Element {
   const [typistPos, setTypistPos] = useState<number | null>(null);
   const [erased, setErased] = useState<boolean[]>([]);
 
-  // runtime font-size (vw) for ASCII so the longest line fits the viewport width
-  const asciiRef = useRef<HTMLElement | null>(null);
-  const [asciiFontVw, setAsciiFontVw] = useState<number | null>(null);
+  // ASCII rendering uses CSS-only sizing (removed runtime vw calculation)
 
   // kicker: show one word at a time (prevents wrap/layout shift)
   const kickerWords = ['Computers', 'AI', 'Agents'];
@@ -84,7 +83,11 @@ export default function App(): JSX.Element {
 
   // advance the counter offset so numbers appear to be counting up
   useEffect(() => {
-    const id = window.setInterval(() => setCountOffset((n) => n + 1n), 10); // very fast counting (10ms)
+    // throttle background counter — reduce CPU use (was 10ms)
+    const id = window.setInterval(() => {
+      if (typeof document !== 'undefined' && document.visibilityState !== 'visible') return;
+      setCountOffset((n) => n + 1n);
+    }, 250); // update every 250ms instead of 10ms
     return () => clearInterval(id);
   }, []);
 
@@ -117,50 +120,7 @@ export default function App(): JSX.Element {
     return () => clearTimeout(id);
   }, [asciiIdx, asciiArt]);
 
-  // size the ASCII font so the longest ASCII line always fits the available column width
-  useEffect(() => {
-    const computeAsciiFont = () => {
-      const pre = asciiRef.current as HTMLElement | null;
-      if (!pre) return;
-      const parent = pre.parentElement as HTMLElement | null;
-      const available = (parent ? parent.clientWidth - 12 : Math.max(320, window.innerWidth - 48)) * 0.96;
-
-      // pick the actual longest line (keeps punctuation/spacing accurate)
-      const lines = asciiArt.split('\n');
-      const longest = lines.reduce((a, b) => (a.length >= b.length ? a : b), '');
-      if (!longest) return;
-
-      // measure the rendered width of the longest line at font-size:1vw, then scale
-      const probe = document.createElement('span');
-      probe.style.position = 'absolute';
-      probe.style.visibility = 'hidden';
-      probe.style.whiteSpace = 'pre';
-      probe.style.fontFamily = getComputedStyle(pre).fontFamily || "'Hack','VT323',monospace";
-      probe.style.fontSize = '1vw';
-      probe.textContent = longest;
-      document.body.appendChild(probe);
-      const measuredAt1vw = probe.getBoundingClientRect().width || 1;
-      document.body.removeChild(probe);
-
-      // scale factor to make measuredAt1vw fit into `available` px
-      const scaleFactor = Math.max(0.1, available / measuredAt1vw);
-      const clampedVw = Math.max(0.4, Math.min(10, scaleFactor));
-
-      // cap by viewport height so ASCII never overflows vertically
-      const fontPx = (clampedVw / 100) * window.innerWidth;
-      const maxFontPxByHeight = Math.floor((window.innerHeight * 0.6) / Math.max(1, lines.length));
-      if (fontPx > maxFontPxByHeight) {
-        const adjustedVw = (maxFontPxByHeight / window.innerWidth) * 100;
-        setAsciiFontVw(Math.max(0.4, Math.min(clampedVw, adjustedVw)));
-      } else {
-        setAsciiFontVw(clampedVw);
-      }
-    };
-
-    computeAsciiFont();
-    window.addEventListener('resize', computeAsciiFont);
-    return () => window.removeEventListener('resize', computeAsciiFont);
-  }, [asciiArt]);
+  // Note: runtime font-size calculation removed — CSS `.ascii-pre` controls sizing now.
 
   // erase → retype wave (start at the beginning and move forward)
   /* eslint-disable react-hooks/exhaustive-deps */
@@ -227,7 +187,13 @@ export default function App(): JSX.Element {
   }, [asciiIdx, asciiArt]);
   /* eslint-enable react-hooks/exhaustive-deps */
 
-
+  if (typeof window !== 'undefined' && window.location.pathname.includes('/tui-ftw')) {
+    return (
+      <React.Suspense fallback={<div style={{padding:24}}>TUI experiments — loading…</div>}>
+        <TuiFtw />
+      </React.Suspense>
+    );
+  }
 
   return (
     <div className="site-wrapper">
@@ -236,7 +202,7 @@ export default function App(): JSX.Element {
       <div className="header" style={{ gridColumn: '1 / -1' }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre ref={asciiRef} className="ascii-pre" style={asciiFontVw ? { fontSize: `${asciiFontVw}vw` } : undefined }>
+            <pre className="ascii-pre">
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
@@ -258,31 +224,12 @@ export default function App(): JSX.Element {
               {asciiIdx < asciiArt.length && typistPos == null && (
                 <span className="ascii-cursor ascii-inline-caret" aria-hidden>│</span>
               )}
-              {/* decorative ghost caret — preserves the large visual gap while local carets do actual typing/erasing */}
-              <span
-                className="ascii-ghost-caret"
-                aria-hidden
-                style={(() => {
-                  const trackIndex = (eraserPos !== null && eraserPos !== undefined) ? eraserPos : ((typistPos !== null && typistPos !== undefined) ? typistPos : Math.max(0, asciiIdx - 1));
-                  const clamped = Math.max(0, Math.min(trackIndex, asciiArt.length - 1));
-                  const before = asciiArt.slice(0, clamped + 1);
-                  const line = before.split('\n').length - 1;
-                  const lastNl = before.lastIndexOf('\n');
-                  const col = clamped - (lastNl === -1 ? 0 : lastNl + 1);
-                  return { left: `${col}ch`, top: `calc(${line} * 1em + 0.25em)` } as React.CSSProperties;
-                })()}
-              >│</span>
             </pre>
           </span>
-          <span className="sr-only">nowon</span>
         </div>
 
         <div className="header-right">
-          <nav>
-            <a href="#">Products</a>
-            <a href="#">Platform</a>
-            <a href="#">Docs</a>
-            <a href="#">Contact</a>
+          <nav aria-label="main">
           </nav>
         </div>
       </div>
@@ -294,7 +241,7 @@ export default function App(): JSX.Element {
         <p className="lead">Build secure, agentified automation for the enterprise. CLI-first, privacy-conscious, and designed for teams that treat automation like engineering.</p>
         <div className="ctas">
           <button className="btn">Get started</button>
-          <button className="btn ghost">Explore templates</button>
+          <a className="btn ghost" href="/nowon/tui-ftw">tui-ftw</a>
         </div>
 
         <div className="features" style={{ marginTop: 22 }}>
@@ -340,7 +287,6 @@ $ python tools/web_hands.py open "https://nowon.example" --headful`}
         <div className="messages" id="msgs"><div style={{ opacity: 0.6, color: 'var(--muted)', fontSize: 12 }}>AI stub ready — connect a backend to enable messages.</div></div>
         <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
           <input placeholder="Ask nowon..." disabled />
-          <button className="btn ghost" style={{ padding: '8px 10px' }}>Connect</button>
         </div>
       </div>
 
