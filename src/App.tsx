@@ -279,17 +279,6 @@ $ python tools/web_hands.py open "https://nowon.example" --headful`}
         </div>
       </aside>
 
-      <div className="ai-stub" aria-hidden>
-        <header style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', padding: '6px 6px 12px' }}>
-          <strong>nowon AI (beta)</strong>
-          <small style={{ color: 'var(--muted)' }}>• client stub</small>
-        </header>
-        <div className="messages" id="msgs"><div style={{ opacity: 0.6, color: 'var(--muted)', fontSize: 12 }}>AI stub ready — connect a backend to enable messages.</div></div>
-        <div style={{ display: 'flex', gap: 8, marginTop: 8 }}>
-          <input placeholder="Ask nowon..." disabled />
-        </div>
-      </div>
-
       <footer style={{ gridColumn: '1 / -1' }}>© nowon — Computers &amp; AI</footer>
     </div>
     </div>

@@ -43,7 +43,17 @@ export default function TuiFtwIndex(): JSX.Element {
         <div style={{ width: 220, borderRight: '1px solid rgba(255,255,255,0.03)', paddingRight: 12 }}>
           <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: 8 }}>
             <strong>tui‑ftw (private)</strong>
-            <button className="btn ghost" onClick={() => (window.location.pathname = '/')} style={{ fontSize: 12 }}>Close</button>
+            <button
+              className="btn ghost"
+              onClick={() => {
+                // prefer history.back(), fallback to homepage if no history
+                if (window.history.length > 1) window.history.back();
+                else window.location.pathname = '/nowon/';
+              }}
+              style={{ fontSize: 12 }}
+            >
+              Close
+            </button>
           </div>
           <div style={{ color: 'var(--muted)', fontSize: 13, marginBottom: 8 }}>Click a demo to load (lazy)</div>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'grid', gap: 6 }}>
