@@ -1,1 +1,0 @@
-import{j as e}from"./index-CofvVOx5.js";function n(){return e.jsxs("div",{style:{padding:12},children:[e.jsx("h3",{children:"Rezi — placeholder"}),e.jsx("p",{children:"Prototype Rezi-style input and global keybinding UX in the browser (no native engine)."}),e.jsx("small",{children:"Test: Tab traps, modal focus, and virtualized lists."})]})}export{n as default};
