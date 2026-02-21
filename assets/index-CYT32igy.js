@@ -1,1 +1,0 @@
-import{j as e}from"./index-1lqBQfz8.js";function r(){return e.jsxs("div",{style:{padding:12},children:[e.jsx("h3",{children:"SvelTUI — experimental mock"}),e.jsx("p",{children:"Client-side mock of SvelTUI reactive patterns (keyboard + focus behavior testing)."}),e.jsx("small",{children:"Focus nav and reactive updates can be prototyped here."})]})}export{r as default};
