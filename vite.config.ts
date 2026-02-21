@@ -1,17 +1,16 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
+import vitePluginWasm from 'vite-plugin-wasm';
 
 export default defineConfig({
-  base: '/nowon/',
+  base: process.env.NODE_ENV === 'production' ? '/nowon/' : '/',
   plugins: [
     react(),
     VitePWA({
       registerType: 'autoUpdate',
-      // include fonts in the PWA precache so they're available immediately/offline
       includeAssets: ['favicon.svg', 'fonts/*.flf'],
       workbox: {
-        // also ensure workbox will precache the font files (glob pattern)
         globPatterns: ['**/fonts/*.flf']
       },
       manifest: {
@@ -26,7 +25,20 @@ export default defineConfig({
           { src: 'icon-512.svg', sizes: '512x512', type: 'image/svg+xml' }
         ]
       }
-    })
+    }),
+    vitePluginWasm()
   ],
-  server: { port: 5173 }
+  server: { port: 5173 },
+  build: {
+    rollupOptions: {
+      external: [
+        'bun:ffi',
+        'C:/dev/opentui/packages/core/src/lib/tree-sitter/assets/javascript/tree-sitter-javascript.wasm',
+        'C:/dev/opentui/packages/core/src/lib/tree-sitter/assets/markdown/tree-sitter-markdown.wasm',
+        'C:/dev/opentui/packages/core/src/lib/tree-sitter/assets/zig/tree-sitter-zig.wasm',
+        'C:/dev/opentui/packages/core/src/lib/tree-sitter/assets/typescript/tree-sitter-typescript.wasm'
+      ]
+    }
+  },
+  assetsInclude: ['**/*.scm']
 });

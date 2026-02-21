@@ -3,7 +3,7 @@
 This folder contains private experiment folders for different TUI frameworks and prompt libraries.
 
 Structure:
-- `opentui/` — OpenTUI experiment
+// ...existing code...
 - `reactive_tui/` — Reactive TUI (Rust/TS) experiment
 - `blessed-contrib/` — blessed-contrib demo
 - `sveltui/` — SvelTUI experiment

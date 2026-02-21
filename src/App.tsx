@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-const TuiFtw = React.lazy(() => import('./tui-ftw/index'));
+const FigletTui = React.lazy(() => import('./tui-ftw/figlet-tui'));
 
 export default function App(): JSX.Element {
   // show one word at a time (prevent wrapping / layout shifts)
@@ -189,29 +189,27 @@ export default function App(): JSX.Element {
 
   if (typeof window !== 'undefined' && window.location.pathname.includes('/tui-ftw')) {
     return (
-      <React.Suspense fallback={<div style={{padding:24}}>TUI experiments — loading…</div>}>
+      <React.Suspense fallback={<div style={{padding:24}}>Loading Figlet TUI…</div>}>
         <TuiFtw />
       </React.Suspense>
     );
   }
 
+  // Custom landing page (replace with your preferred content)
   return (
     <div className="site-wrapper">
-      <pre className="count-bg" aria-hidden>{bgText}</pre>
-      <div className="container">
-      <div className="header" style={{ gridColumn: '1 / -1' }}>
+      <div className="header" style={{ gridColumn: '1 / -1', marginBottom: 32 }}>
         <div className="header-left">
           <span className="ascii-logo" aria-hidden>
-            <pre className="ascii-pre">
+            <pre className={`ascii-pre neon${waveActive ? ' flicker' : ''}`} style={{ fontSize: 16, margin: 0 }}>
               {(displayStr || asciiArt.slice(0, asciiIdx)).split('').map((ch, i) => {
                 const isErased = !!erased[i];
                 const isTypist = i === typistPos;
                 if (ch === '\n') return <br key={i} />;
-                const classList: string[] = [];
+                const classList = [];
                 if (isErased) classList.push('erased');
                 if (isTypist) classList.push('typist-char');
                 const className = classList.length ? classList.join(' ') : undefined;
-
                 return (
                   <span key={i} className={className}>
                     {ch === ' ' ? '\u00A0' : ch}
@@ -220,67 +218,16 @@ export default function App(): JSX.Element {
                   </span>
                 );
               })}
-              { /* inline typing caret: appears at the next write position during initial type-in */ }
               {asciiIdx < asciiArt.length && typistPos == null && (
                 <span className="ascii-cursor ascii-inline-caret" aria-hidden>│</span>
               )}
             </pre>
           </span>
         </div>
-
-        <div className="header-right">
-          <nav aria-label="main">
-          </nav>
-        </div>
       </div>
-
-      <section className="hero">
-        <h1>
-          nowon — where <span className="type">{text || '\u00A0'}</span>
-        </h1>
-        <p className="lead">Build secure, agentified automation for the enterprise. CLI-first, privacy-conscious, and designed for teams that treat automation like engineering.</p>
-        <div className="ctas">
-          <button className="btn">Get started</button>
-          <a className="btn ghost" href="/nowon/tui-ftw">tui-ftw</a>
-        </div>
-
-        <div className="features" style={{ marginTop: 22 }}>
-          <div className="card"><h4>CLI-first</h4><p>Scriptable tools for deterministic automation and reproducible runs.</p></div>
-          <div className="card"><h4>Agent Templates</h4><p>Prebuilt templates & skills to accelerate delivery.</p></div>
-          <div className="card"><h4>Secure by design</h4><p>Keys, auditable approvals and local-only execution.</p></div>
-        </div>
-
-        <div className="terminal-card" role="region" aria-label="CLI input">
-          <div className="terminal-left" aria-hidden></div>
-          <input className="terminal-input" placeholder="Type your message or /help" aria-label="CLI input" />
-          <div className="terminal-meta"><span className="term-badge">gemini-2.5-pro</span><span>200k context</span></div>
-        </div>
-      </section>
-
-      <aside>
-        <div className="cli-card">
-          <div className="cli-badge"><span className="dot" /> <span className="mon">cli.nowon — pif • demo</span></div>
-          <pre>
-{`$ curl -o pif.mjs https://nothumanallowed.com/cli/pif.mjs
-$ node pif.mjs register --name "nowon-Agent"
-$ pif template:list --category=automation
-$ pif evolve --task "security audit"
-
-# Preview (web hands)
-$ python tools/web_hands.py open "https://nowon.example" --headful`}
-          </pre>
-        </div>
-
-        <div style={{ height: 18 }} />
-
-        <div className="cli-card" style={{ marginTop: 12, textAlign: 'center' }}>
-          <strong style={{ display: 'block', marginBottom: 8, color: 'var(--accent)' }}>Live preview</strong>
-          <img src="/webhands.png" alt="preview" style={{ width: '100%', borderRadius: 8, border: '1px solid rgba(255,255,255,0.03)' }} />
-        </div>
-      </aside>
-
-      <footer style={{ gridColumn: '1 / -1' }}>© nowon — Computers &amp; AI</footer>
-    </div>
+      <React.Suspense fallback={<div style={{ padding: 32 }}>Loading Figlet TUI…</div>}>
+        <FigletTui />
+      </React.Suspense>
     </div>
   );
 }

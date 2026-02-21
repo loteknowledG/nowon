@@ -9,7 +9,7 @@ const loaders = {
   chalk: () => import('./chalk'),
   figlet: () => import('./figlet'),
   'figlet-tui': () => import('./figlet-tui'),
-  'opentui-link': () => import('./opentui-link'),
+  // ...existing code...
   clack: () => import('./clack'),
   enquirer: () => import('./enquirer'),
 } as const;
@@ -24,7 +24,7 @@ const demoList: { key: DemoKey; label: string }[] = [
   { key: 'chalk', label: 'Chalk' },
   { key: 'figlet', label: 'Figlet' },
   { key: 'figlet-tui', label: 'Figlet TUI' },
-  { key: 'opentui-link', label: 'OpenTUI (local)' },
+  // ...existing code...
   { key: 'clack', label: '@clack/prompts' },
   { key: 'enquirer', label: 'Enquirer' },
 ];
@@ -46,9 +46,10 @@ export default function TuiFtwIndex(): JSX.Element {
             <button
               className="btn ghost"
               onClick={() => {
-                // prefer history.back(), fallback to homepage if no history
-                if (window.history.length > 1) window.history.back();
-                else window.location.pathname = '/nowon/';
+                // always send the user back to the homepage regardless of history
+                // (history.back() can sometimes land on a blank or the same page if
+                //  the demo was opened in a fresh tab).
+                window.location.pathname = '/nowon/';
               }}
               style={{ fontSize: 12 }}
             >
