@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 
 type Role = 'user' | 'assistant' | 'system';
@@ -56,6 +57,25 @@ export default function FigletTui(): JSX.Element {
 
   // --- Command handler ---
   const handleCommand = (cmd: string) => {
+        // Hacker News command
+        if (cmd.trim().toLowerCase() === 'hn' || cmd.trim().toLowerCase() === 'hackernews') {
+          push({ role: 'system', text: 'Fetching top Hacker News stories...' });
+          fetch('https://hacker-news.firebaseio.com/v0/topstories.json')
+            .then(res => res.json())
+            .then(async (ids) => {
+              const top10 = ids.slice(0, 10);
+              const stories = await Promise.all(top10.map((id: number) =>
+                fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`).then(r => r.json())
+              ));
+              let out = stories.map((s: any, i: number) => {
+                const url = s.url || 'https://news.ycombinator.com/item?id=' + s.id;
+                return `${i + 1}. ${s.title} [${s.score}★]\n    <a href='${url}' target='_blank' rel='noopener noreferrer'>${url}</a>`;
+              }).join('\n\n');
+              push({ role: 'assistant', text: '\nHacker News Top Stories:\n\n' + out });
+            })
+            .catch(() => push({ role: 'assistant', text: 'Failed to fetch Hacker News.' }));
+          return;
+        }
     const text = cmd.trim();
     if (!text) return;
     push({ role: 'user', text });
@@ -70,7 +90,7 @@ export default function FigletTui(): JSX.Element {
     }
     if (name === 'figlet-mode') {
       setFigletMode(v => !v);
-      push({ role: 'system', text: `Figlet mode is now ${!figletMode ? 'ON' : 'OFF'}` });
+      push({ role: 'system', text: 'Figlet mode is now'+ ` ${!figletMode ? 'ON' : 'OFF'}` });
       return;
     }
     if (name === 'font-select') {
@@ -151,18 +171,68 @@ export default function FigletTui(): JSX.Element {
       <div className="tui-header" style={{ padding: 16, borderBottom: '1px solid #333', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
         <div>
           <strong>Figlet TUI</strong>
-          <div style={{ fontSize: 12, color: '#aaa' }}>Type text and press Enter — Figlet mode is <b style={{color: figletMode ? '#0f0' : '#f44'}}>{figletMode ? 'ON' : 'OFF'}</b></div>
-        </div>
-        <div style={{ display: 'flex', gap: 8 }}>
-          <button onClick={() => setShowFontModal(true)} style={{ background: '#7b61ff', color: '#fff', border: 'none', borderRadius: 6, padding: '6px 16px', fontWeight: 'bold', cursor: 'pointer' }}>Font</button>
-          <button onClick={() => { setFigletMode(v => !v); push({ role: 'system', text: `Figlet mode is now ${!figletMode ? 'ON' : 'OFF'}` }); }} style={{ background: figletMode ? '#0f0' : '#f44', color: '#222', border: 'none', borderRadius: 6, padding: '6px 16px', fontWeight: 'bold', cursor: 'pointer' }}>{figletMode ? 'Figlet ON' : 'Figlet OFF'}</button>
+          <div style={{ fontSize: 12, color: '#aaa' }}>
+            Type text and press Enter — Figlet mode is
+            <span
+              style={{ marginLeft: 6, fontWeight: 'bold', userSelect: 'none', fontSize: 14 }}
+            >
+              <span
+                onClick={() => {
+                  setFigletMode(v => !v);
+                  push({ role: 'system', text: `Figlet mode is now ${!figletMode ? 'ON' : 'OFF'}` });
+                }}
+                style={{
+                  color: figletMode ? '#0f0' : '#f44',
+                  cursor: 'pointer',
+                  borderBottom: '1px dotted ' + (figletMode ? '#0f0' : '#f44'),
+                  padding: '0 4px',
+                  transition: 'color 0.2s, border-color 0.2s'
+                }}
+                title="Click to toggle Figlet mode"
+              >
+                {figletMode ? 'ON' : 'OFF'}
+              </span>
+            </span>
+          </div>
         </div>
       </div>
-      <div ref={msgsRef} style={{ flex: 1, overflow: 'auto', padding: 16 }}>
+      <div ref={msgsRef} style={{ flex: 1, overflow: 'auto', padding: 16, fontSize: 13 }}>
         {messages.map((m) => (
           <div key={m.id} style={{ marginBottom: 8 }}>
             <span style={{ color: m.role === 'user' ? '#0ff' : m.role === 'assistant' ? '#7b61ff' : '#aaa', fontWeight: 'bold' }}>{m.role}:</span>
-            <pre style={{ display: 'inline', marginLeft: 8 }}>{m.text}</pre>
+            {m.role === 'assistant' && m.text.trim().startsWith('Hacker News Top Stories:') ? (
+              <span
+                style={{ display: 'block', marginLeft: 8, fontSize: 12 }}
+                dangerouslySetInnerHTML={{
+                  __html: m.text
+                    // Color links and shorten to domain
+                    .replace(/<a ([^>]+)>([^<]+)<\/a>/g, (match, attrs, text) => {
+                      const colors = ['#ffb347', '#00eaff', '#fff68f', '#ff5e5e', '#7b61ff'];
+                      let color = colors[Math.floor(Math.random() * colors.length)];
+                      const rankMatch = text.match(/^\d+\./);
+                      if (rankMatch) {
+                        const rank = parseInt(rankMatch[0], 10);
+                        color = colors[(rank - 1) % colors.length];
+                      }
+                      // Extract href
+                      const hrefMatch = attrs.match(/href=['"]([^'"]+)['"]/);
+                      let domain = text;
+                      if (hrefMatch) {
+                        try {
+                          const url = new URL(hrefMatch[1]);
+                          domain = url.hostname.replace(/^www\./, '');
+                        } catch {}
+                      }
+                      return `<a ${attrs} style="color: ${color}; font-weight: bold; text-decoration: underline;">${domain}</a>`;
+                    })
+                    // Split articles onto new lines
+                    .replace(/\n\n/g, '<br/><br/>')
+                    .replace(/(\d+\. .+?)<br\/>/g, '$1<br/>')
+                }}
+              />
+            ) : (
+              <pre style={{ display: 'inline', marginLeft: 8, fontSize: 13 }}>{m.text}</pre>
+            )}
           </div>
         ))}
       </div>
